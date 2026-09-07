@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\Producto;
+use App\Models\User;
+
+class ProductoPolicy
+{
+    public function before(User $user): ?bool
+    {
+        return $user->hasRole('Administrador') ? true : null;
+    }
+
+    /**
+     * Determine whether the user can view any models.
+     */
+    public function viewAny(User $user): bool
+    {
+        return $user->hasAnyRole(['Vendedor', 'Inventario', 'Logistica', 'Cliente']);
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     */
+    public function view(User $user, Producto $producto): bool
+    {
+        return $this->viewAny($user);
+    }
+
+    /**
+     * Determine whether the user can create models.
+     */
+    public function create(User $user): bool
+    {
+        return $user->can('crear productos');
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     */
+    public function update(User $user, Producto $producto): bool
+    {
+        return $user->can('editar productos');
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     */
+    public function delete(User $user, Producto $producto): bool
+    {
+        return $user->can('eliminar productos');
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     */
+    public function restore(User $user, Producto $producto): bool
+    {
+        return $user->can('editar productos');
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDelete(User $user, Producto $producto): bool
+    {
+        return $user->can('eliminar productos');
+    }
+}

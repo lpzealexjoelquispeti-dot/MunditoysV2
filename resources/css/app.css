@@ -1,0 +1,68 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --color-brand-red: #e30613;
+    --color-brand-red-dark: #b70410;
+    --color-brand-blue: #005ca8;
+    --color-brand-blue-dark: #00467f;
+    --color-brand-orange: #f58220;
+    --color-brand-orange-soft: #fff0df;
+    --color-brand-surface: #fffaf6;
+    --color-brand-ink: #183247;
+}
+
+html,
+body,
+input,
+textarea,
+select,
+table,
+button,
+a {
+    font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4 {
+    letter-spacing: -0.015em;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgb(0 92 168 / 12%);
+    outline: none;
+}
+
+::selection {
+    background-color: rgb(245 130 32 / 28%);
+    color: var(--color-brand-ink);
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+.mundi-sucursal-marker {
+    display: grid;
+    place-items: center;
+    border: 3px solid white;
+    border-radius: 50%;
+    background: var(--color-brand-red);
+    color: white;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+@utility toy-dot-grid {
+    background-image: radial-gradient(circle, rgb(255 255 255 / 75%) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
+}
