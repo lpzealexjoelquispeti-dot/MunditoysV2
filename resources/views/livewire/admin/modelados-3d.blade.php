@@ -40,33 +40,61 @@
                     </div>
 
                     <form wire:submit="procesarModelado" class="mt-6 space-y-6">
-                        {{-- 1. ASIGNACIÓN DE PRODUCTO --}}
+                        {{-- 1. ASIGNACIÓN DE PRODUCTO (OBLIGATORIO) --}}
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                                1. Asociar con Juguete del Catálogo
-                            </label>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                                    1. Elegir Juguete del Catálogo <span class="text-brand-red">*</span>
+                                </label>
+                                @if ($productoSeleccionado)
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                        ✓ Seleccionado
+                                    </span>
+                                @endif
+                            </div>
 
                             @if ($productoSeleccionado)
-                                <div class="flex items-center justify-between rounded-2xl border border-blue-200 bg-blue-50/60 p-3.5 transition">
-                                    <div class="flex items-center gap-3 min-w-0">
-                                        @if ($productoSeleccionado['imagen'])
-                                            <img src="{{ $productoSeleccionado['imagen'] }}" alt="{{ $productoSeleccionado['nombre'] }}" class="size-12 rounded-xl object-cover bg-white shadow-xs">
-                                        @else
-                                            <div class="grid size-12 place-items-center rounded-xl bg-white text-2xl shadow-xs">🧸</div>
-                                        @endif
-                                        <div class="min-w-0">
-                                            <p class="text-sm font-bold text-brand-ink truncate">{{ $productoSeleccionado['nombre'] }}</p>
-                                            <p class="text-xs text-slate-500 font-mono">{{ $productoSeleccionado['codigo'] }}</p>
-                                            @if ($productoSeleccionado['tiene_3d'])
-                                                <span class="inline-block mt-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-full">
-                                                    Ya tiene modelo 3D
-                                                </span>
+                                <div class="rounded-2xl border-2 border-brand-blue/30 bg-blue-50/50 p-4 transition shadow-xs space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3.5 min-w-0">
+                                            @if ($productoSeleccionado['imagen'])
+                                                <img src="{{ $productoSeleccionado['imagen'] }}" alt="{{ $productoSeleccionado['nombre'] }}" class="size-14 rounded-2xl object-cover bg-white shadow-xs border border-blue-100">
+                                            @else
+                                                <div class="grid size-14 place-items-center rounded-2xl bg-white text-3xl shadow-xs border border-blue-100">🧸</div>
                                             @endif
+                                            <div class="min-w-0">
+                                                <p class="text-sm font-bold text-brand-ink truncate">{{ $productoSeleccionado['nombre'] }}</p>
+                                                <p class="text-xs text-slate-500 font-mono mt-0.5">Código: {{ $productoSeleccionado['codigo'] }}</p>
+                                                @if ($productoSeleccionado['tiene_3d'])
+                                                    <span class="inline-block mt-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
+                                                        ✓ Ya tiene modelo 3D asignado
+                                                    </span>
+                                                @else
+                                                    <span class="inline-block mt-1 text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">
+                                                        ★ Sin gemelo digital 3D aún
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
+                                        <button 
+                                            type="button" 
+                                            wire:click="quitarProductoSeleccionado" 
+                                            class="ml-3 shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-xs hover:bg-red-50 hover:text-brand-red border border-slate-200 transition"
+                                            title="Elegir otro producto"
+                                        >
+                                            Cambiar
+                                        </button>
                                     </div>
-                                    <button type="button" wire:click="quitarProductoSeleccionado" class="ml-2 rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-slate-600 shadow-xs hover:bg-red-50 hover:text-brand-red transition">
-                                        Cambiar
-                                    </button>
+
+                                    @if ($productoSeleccionado['tiene_3d'])
+                                        <div class="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 flex items-start gap-2.5 shadow-2xs">
+                                            <span class="text-base shrink-0">⚠️</span>
+                                            <div>
+                                                <p class="font-bold text-amber-800">Este juguete ya cuenta con un modelado 3D enlazado.</p>
+                                                <p class="text-amber-700 mt-0.5">El producto ya exhibe una malla 3D en el catálogo. Si generas un nuevo modelo y lo enlazas, sustituirá al actual.</p>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             @else
                                 <div class="relative">
@@ -83,125 +111,140 @@
                                                 <button 
                                                     type="button" 
                                                     wire:click="seleccionarProducto({{ $sugerencia['id'] }})" 
-                                                    class="flex w-full items-center gap-3 rounded-xl p-2 text-left hover:bg-slate-50 transition"
+                                                    class="flex w-full items-center gap-3 rounded-xl p-2.5 text-left hover:bg-slate-50 transition border-b border-slate-100 last:border-0"
                                                 >
                                                     @if ($sugerencia['imagen'])
-                                                        <img src="{{ $sugerencia['imagen'] }}" alt="{{ $sugerencia['nombre'] }}" class="size-9 rounded-lg object-cover bg-slate-100">
+                                                        <img src="{{ $sugerencia['imagen'] }}" alt="{{ $sugerencia['nombre'] }}" class="size-10 rounded-xl object-cover bg-slate-100 shrink-0">
                                                     @else
-                                                        <div class="grid size-9 place-items-center rounded-lg bg-slate-100 text-lg">🧸</div>
+                                                        <div class="grid size-10 place-items-center rounded-xl bg-slate-100 text-xl shrink-0">🧸</div>
                                                     @endif
                                                     <div class="min-w-0 flex-1">
                                                         <p class="text-xs font-bold text-brand-ink truncate">{{ $sugerencia['nombre'] }}</p>
                                                         <p class="text-[11px] text-slate-500 font-mono">{{ $sugerencia['codigo'] }}</p>
                                                     </div>
                                                     @if ($sugerencia['tiene_3d'])
-                                                        <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">3D Activo</span>
+                                                        <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">3D Activo</span>
                                                     @endif
                                                 </button>
                                             @endforeach
                                         </div>
                                     @endif
                                 </div>
-                                <p class="mt-1 text-[11px] text-slate-500">Opcional: puedes asociar o enlazar el modelo más tarde.</p>
+                                <p class="mt-1 text-[11px] text-slate-500">Escribe al menos 2 letras para desplegar las sugerencias del catálogo.</p>
                             @endif
-                            @error('productoId') <span class="mt-1 block text-xs font-medium text-brand-red">{{ $message }}</span> @enderror
+                            @error('productoId') <span class="mt-1.5 block text-xs font-bold text-brand-red">{{ $message }}</span> @enderror
                         </div>
 
-                        {{-- 2. CARGA DE FOTOGRAFÍAS MULTI-ÁNGULO --}}
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                                    2. Fotografías Multi-Ángulo (2 a 4 fotos)
-                                </label>
-                                <span class="text-xs font-semibold text-brand-blue">
-                                    {{ count($fotos) }} / 4 seleccionadas
-                                </span>
-                            </div>
+                        {{-- 2. CARGA DE FOTOGRAFÍAS: CONDICIONADO A TENER UN JUGUETE SELECCIONADO --}}
+                        @if ($productoSeleccionado)
+                            <div class="space-y-6 pt-4 border-t border-slate-100 animate-fade-in">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                                            2. Fotografías Multi-Ángulo (2 a 4 fotos) <span class="text-brand-red">*</span>
+                                        </label>
+                                        <span class="text-xs font-semibold text-brand-blue">
+                                            {{ count($fotos) }} / 4 seleccionadas
+                                        </span>
+                                    </div>
 
-                            {{-- ÁREA DROPZONE --}}
-                            <div class="relative rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50/60 p-6 text-center transition hover:border-brand-blue hover:bg-blue-50/30">
-                                <input 
-                                    type="file" 
-                                    wire:model="fotos" 
-                                    id="input-fotos-3d" 
-                                    multiple 
-                                    accept="image/png,image/jpeg,image/webp,image/jpg" 
-                                    class="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
-                                >
-                                <div class="grid size-12 mx-auto place-items-center rounded-2xl bg-white shadow-xs text-2xl">
-                                    📸
+                                    {{-- ÁREA DROPZONE --}}
+                                    <div class="relative rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50/60 p-6 text-center transition hover:border-brand-blue hover:bg-blue-50/30">
+                                        <input 
+                                            type="file" 
+                                            wire:model="fotos" 
+                                            id="input-fotos-3d" 
+                                            multiple 
+                                            accept="image/png,image/jpeg,image/webp,image/jpg" 
+                                            class="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
+                                        >
+                                        <div class="grid size-12 mx-auto place-items-center rounded-2xl bg-white shadow-xs text-2xl">
+                                            📸
+                                        </div>
+                                        <p class="mt-3 text-sm font-bold text-brand-ink">
+                                            Haz clic para subir o arrastra las fotos aquí
+                                        </p>
+                                        <p class="mt-1 text-xs text-slate-500">
+                                            PNG, JPG o WEBP (máx. 3 MB por foto).
+                                        </p>
+
+                                        {{-- INDICADOR DE CARGA --}}
+                                        <div wire:loading wire:target="fotos" class="mt-3 text-xs font-bold text-brand-blue flex items-center justify-center gap-2">
+                                            <svg class="size-4 animate-spin text-brand-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                            </svg>
+                                            <span>Cargando imágenes al navegador...</span>
+                                        </div>
+                                    </div>
+
+                                    @error('fotos') <span class="mt-1.5 block text-xs font-medium text-brand-red">{{ $message }}</span> @enderror
+                                    @error('fotos.*') <span class="mt-1 block text-xs font-medium text-brand-red">{{ $message }}</span> @enderror
+
+                                    {{-- MINIATURAS DE LAS FOTOS SELECCIONADAS --}}
+                                    @if (!empty($fotos))
+                                        <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                            @foreach ($fotos as $index => $foto)
+                                                @if (method_exists($foto, 'temporaryUrl'))
+                                                    <div class="relative group rounded-2xl overflow-hidden border border-slate-200 bg-white aspect-square shadow-xs">
+                                                        <img src="{{ $foto->temporaryUrl() }}" alt="Vista previa {{ $index + 1 }}" class="h-full w-full object-cover">
+                                                        <span class="absolute bottom-1 left-1 rounded-md bg-brand-ink/80 px-1.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                                                            Ángulo {{ $index + 1 }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    {{-- GUÍA DE ÁNGULOS --}}
+                                    <div class="mt-4 rounded-2xl bg-amber-50/80 p-3.5 border border-amber-200/70 text-xs text-amber-900">
+                                        <p class="font-bold flex items-center gap-1.5">
+                                            <span>💡</span> Recomendación de ángulos para {{ $productoSeleccionado['nombre'] }}:
+                                        </p>
+                                        <ul class="mt-1.5 list-disc list-inside space-y-0.5 text-[11px] text-amber-800">
+                                            <li><strong>Foto 1:</strong> Frente del juguete centrado.</li>
+                                            <li><strong>Foto 2:</strong> Lateral derecho o perfil.</li>
+                                            <li><strong>Foto 3:</strong> Vista posterior (espalda).</li>
+                                            <li><strong>Foto 4:</strong> Lateral izquierdo o ángulo superior.</li>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <p class="mt-3 text-sm font-bold text-brand-ink">
-                                    Haz clic para subir o arrastra las fotos aquí
-                                </p>
-                                <p class="mt-1 text-xs text-slate-500">
-                                    PNG, JPG o WEBP (máx. 3 MB por foto). Recomendado: fondo neutro y buena iluminación.
-                                </p>
 
-                                {{-- INDICADOR DE CARGA --}}
-                                <div wire:loading wire:target="fotos" class="mt-3 text-xs font-bold text-brand-blue flex items-center justify-center gap-2">
-                                    <svg class="size-4 animate-spin text-brand-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                    </svg>
-                                    <span>Cargando imágenes al navegador...</span>
+                                {{-- BOTÓN SUBMIT CON LOADER --}}
+                                <div>
+                                    <button 
+                                        type="submit" 
+                                        wire:loading.attr="disabled" 
+                                        wire:target="procesarModelado, fotos" 
+                                        @disabled(count($fotos) < 2 || count($fotos) > 4) 
+                                        class="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-red px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <span wire:loading.remove wire:target="procesarModelado">
+                                            ✨ Iniciar Generación 3D con Tripo AI
+                                        </span>
+                                        <span wire:loading wire:target="procesarModelado" class="flex items-center gap-2">
+                                            <svg class="size-4 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                            </svg>
+                                            <span>Enviando tarea a Tripo AI...</span>
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
-
-                            @error('fotos') <span class="mt-1.5 block text-xs font-medium text-brand-red">{{ $message }}</span> @enderror
-                            @error('fotos.*') <span class="mt-1 block text-xs font-medium text-brand-red">{{ $message }}</span> @enderror
-
-                            {{-- MINIATURAS DE LAS FOTOS SELECCIONADAS --}}
-                            @if (!empty($fotos))
-                                <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    @foreach ($fotos as $index => $foto)
-                                        @if (method_exists($foto, 'temporaryUrl'))
-                                            <div class="relative group rounded-2xl overflow-hidden border border-slate-200 bg-white aspect-square shadow-xs">
-                                                <img src="{{ $foto->temporaryUrl() }}" alt="Vista previa {{ $index + 1 }}" class="h-full w-full object-cover">
-                                                <span class="absolute bottom-1 left-1 rounded-md bg-brand-ink/80 px-1.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
-                                                    Ángulo {{ $index + 1 }}
-                                                </span>
-                                            </div>
-                                        @endif
-                                    @endforeach
+                        @else
+                            {{-- ESTADO BLOQUEADO HASTA QUE SE ASOCIE UN JUGUETE --}}
+                            <div class="rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/60 p-7 text-center">
+                                <div class="mx-auto grid size-12 place-items-center rounded-2xl bg-white shadow-xs text-2xl text-slate-400">
+                                    🔒
                                 </div>
-                            @endif
-
-                            {{-- GUÍA DE ÁNGULOS --}}
-                            <div class="mt-4 rounded-2xl bg-amber-50/80 p-3.5 border border-amber-200/70 text-xs text-amber-900">
-                                <p class="font-bold flex items-center gap-1.5">
-                                    <span>💡</span> Recomendación para mejores resultados:
+                                <h4 class="mt-3 text-xs font-bold uppercase tracking-wider text-slate-600">Paso 2: Carga de fotos bloqueada</h4>
+                                <p class="mt-1 text-xs text-slate-500 max-w-xs mx-auto">
+                                    Primero elige el juguete en el Paso 1 para desbloquear la zona de subida de fotos y el envío a Tripo AI.
                                 </p>
-                                <ul class="mt-1.5 list-disc list-inside space-y-0.5 text-[11px] text-amber-800">
-                                    <li><strong>Foto 1:</strong> Frente del juguete centrado.</li>
-                                    <li><strong>Foto 2:</strong> Lateral derecho o perfil.</li>
-                                    <li><strong>Foto 3:</strong> Vista posterior (espalda).</li>
-                                    <li><strong>Foto 4:</strong> Lateral izquierdo o ángulo superior.</li>
-                                </ul>
                             </div>
-                        </div>
-
-                        {{-- BOTÓN SUBMIT CON LOADER --}}
-                        <div>
-                            <button 
-                                type="submit" 
-                                wire:loading.attr="disabled" 
-                                wire:target="procesarModelado, fotos" 
-                                @disabled(count($fotos) < 2 || count($fotos) > 4) 
-                                class="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand-orange to-brand-red px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <span wire:loading.remove wire:target="procesarModelado">
-                                    ✨ Iniciar Generación 3D con Tripo AI
-                                </span>
-                                <span wire:loading wire:target="procesarModelado" class="flex items-center gap-2">
-                                    <svg class="size-4 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                    </svg>
-                                    <span>Enviando tarea a Tripo AI...</span>
-                                </span>
-                            </button>
-                        </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -228,11 +271,12 @@
                         <div>
                             <span class="mb-1.5 block text-xs font-semibold text-slate-600">Filtrar por estado</span>
                             <select wire:model.live="filtroEstado" class="min-h-11 w-full rounded-2xl border border-slate-300 bg-white px-3 py-2 text-xs text-brand-ink focus:border-brand-blue">
-                                <option value="">Todos los estados</option>
+                                <option value="">Todos los modelos activos</option>
                                 <option value="completed">Completados / Disponibles</option>
                                 <option value="running">En proceso (Tripo AI)</option>
                                 <option value="queued">En cola de render</option>
                                 <option value="failed">Fallidos</option>
+                                <option value="papelera">🗑️ Papelera (Modelos eliminados)</option>
                             </select>
                         </div>
                     </div>
@@ -265,7 +309,11 @@
                                             <span class="text-xs font-mono font-bold text-slate-400">#{{ $task->id }}</span>
                                             
                                             {{-- BADGE DE ESTADO --}}
-                                            @if ($task->es_completado)
+                                            @if ($task->trashed())
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-700 border border-red-200">
+                                                    🗑️ En Papelera
+                                                </span>
+                                            @elseif ($task->es_completado)
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
                                                     <span class="size-1.5 rounded-full bg-emerald-500"></span> Listo 3D
                                                 </span>
@@ -364,15 +412,26 @@
                                         @endif
                                     @endif
 
-                                    {{-- ELIMINAR REGISTRO --}}
-                                    <button 
-                                        type="button" 
-                                        x-on:click="window.confirmarCrud($wire, 'eliminar', {{ $task->id }}, '¿Archivar modelado 3D?', 'El registro será eliminado del listado.')" 
-                                        class="rounded-xl bg-red-50 px-2.5 py-2 text-xs font-bold text-brand-red hover:bg-red-100 transition"
-                                        title="Eliminar modelado"
-                                    >
-                                        🗑️
-                                    </button>
+                                    {{-- RESTAURAR O ELIMINAR REGISTRO --}}
+                                    @if ($task->trashed())
+                                        <button 
+                                            type="button" 
+                                            wire:click="restaurar({{ $task->id }})" 
+                                            class="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition flex items-center gap-1.5"
+                                            title="Recuperar de la papelera"
+                                        >
+                                            <span>↺</span> Restaurar
+                                        </button>
+                                    @else
+                                        <button 
+                                            type="button" 
+                                            x-on:click="window.confirmarCrud($wire, 'eliminar', {{ $task->id }}, '¿Archivar modelado 3D?', 'El registro será enviado a la papelera.')" 
+                                            class="rounded-xl bg-red-50 px-2.5 py-2 text-xs font-bold text-brand-red hover:bg-red-100 transition"
+                                            title="Enviar a la papelera"
+                                        >
+                                            🗑️
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
 
@@ -523,3 +582,4 @@
         </div>
     </div>
 </x-admin-shell>
+

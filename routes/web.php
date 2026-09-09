@@ -8,6 +8,7 @@ use App\Livewire\Admin\Marcas;
 use App\Livewire\Admin\Modelados3D;
 use App\Livewire\Admin\Productos;
 use App\Livewire\Admin\Proveedores;
+use App\Livewire\Admin\Reportes;
 use App\Livewire\Admin\Sucursales;
 use App\Livewire\Admin\Usuarios;
 use App\Livewire\Admin\Ventas;
@@ -57,6 +58,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'can:acceder panel']
         Route::get('/sucursales', Sucursales::class)->name('sucursales');
         Route::get('/almacenes', Almacenes::class)->name('almacenes');
         Route::get('/proveedores', Proveedores::class)->name('proveedores');
+        Route::get('/reportes', Reportes::class)->name('reportes');
     });
 });
 

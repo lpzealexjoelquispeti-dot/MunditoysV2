@@ -31,11 +31,15 @@ class Modelado3DRepository
 
         if (! empty($filtros['estado'])) {
             $estado = (string) $filtros['estado'];
-            if ($estado === 'completados') {
+            if ($estado === 'papelera' || $estado === 'eliminados' || $estado === 'trashed') {
+                $query->onlyTrashed();
+            } elseif ($estado === 'completados' || $estado === 'completed') {
                 $query->whereIn('status', ['success', 'completed']);
-            } elseif ($estado === 'procesando') {
-                $query->whereNotIn('status', ['success', 'completed', 'failed']);
-            } elseif ($estado === 'fallidos') {
+            } elseif ($estado === 'procesando' || $estado === 'running') {
+                $query->whereIn('status', ['running', 'processing']);
+            } elseif ($estado === 'queued') {
+                $query->where('status', 'queued');
+            } elseif ($estado === 'fallidos' || $estado === 'failed') {
                 $query->where('status', 'failed');
             }
         }
@@ -48,6 +52,18 @@ class Modelado3DRepository
         return Modelado3D::query()
             ->with(['producto.imagenes'])
             ->findOrFail($id);
+    }
+
+    public function buscarConPapelera(int $id): Modelado3D
+    {
+        return Modelado3D::withTrashed()
+            ->with(['producto.imagenes'])
+            ->findOrFail($id);
+    }
+
+    public function restaurar(Modelado3D $modelado): bool
+    {
+        return (bool) $modelado->restore();
     }
 
     public function buscarBloqueado(int $id): Modelado3D

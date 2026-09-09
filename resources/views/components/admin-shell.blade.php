@@ -14,13 +14,13 @@
 
         <p class="mt-9 text-xs font-semibold uppercase tracking-[.18em] text-blue-200">Administración</p>
         <nav class="mt-4 flex flex-col gap-1.5">
-            @foreach ([['productos', '🧸', 'Productos', 'ver productos'], ['modelos-3d', '🧊', 'Generar 3D', 'ver productos'], ['categorias', '🧩', 'Categorías', 'administrar accesos'], ['marcas', '🏷️', 'Marcas', 'administrar accesos'], ['sucursales', '📍', 'Sucursales', 'administrar accesos'], ['almacenes', '🏬', 'Almacenes', 'administrar accesos'], ['proveedores', '🚚', 'Proveedores', 'administrar accesos'], ['inventario', '📦', 'Inventario', 'gestionar inventario'], ['usuarios', '👥', 'Usuarios y accesos', 'administrar accesos']] as [$clave, $icono, $modulo, $permiso])
+            @foreach ([['productos', '🧸', 'Productos', 'ver productos'], ['modelos-3d', '🧊', 'Generar 3D', 'ver productos'], ['categorias', '🧩', 'Categorías', 'administrar accesos'], ['marcas', '🏷️', 'Marcas', 'administrar accesos'], ['sucursales', '📍', 'Sucursales', 'administrar accesos'], ['almacenes', '🏬', 'Almacenes', 'administrar accesos'], ['proveedores', '🚚', 'Proveedores', 'administrar accesos'], ['inventario', '📦', 'Inventario', 'gestionar inventario'], ['usuarios', '👥', 'Usuarios y accesos', 'administrar accesos'], ['reportes', '📊', 'Reportes', 'administrar accesos']] as [$clave, $icono, $modulo, $permiso])
                 @can($permiso)
                 <a href="{{ route('admin.'.$clave) }}" @class(['flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition', 'bg-white text-brand-blue shadow-sm' => $active === $clave, 'text-blue-50 hover:bg-white/10' => $active !== $clave]) wire:navigate wire:key="nav-{{ $clave }}" @if($active === $clave) aria-current="page" @endif><span>{{ $icono }}</span>{{ $modulo }}</a>
                 @endcan
             @endforeach
             @can('administrar accesos')
-            @foreach ([['🧾', 'Ventas'], ['🎟️', 'Promociones'], ['📊', 'Reportes']] as [$icono, $modulo])
+            @foreach ([['🧾', 'Ventas'], ['🎟️', 'Promociones']] as [$icono, $modulo])
                 <button type="button" disabled class="flex items-center gap-3 rounded-xl px-4 py-3 text-left text-blue-100/70" wire:key="modulo-{{ $modulo }}"><span>{{ $icono }}</span>{{ $modulo }}<small class="ms-auto text-[10px]">Pronto</small></button>
             @endforeach
             @endcan

@@ -100,7 +100,16 @@ class Modelados3D extends Component
             'tiene_3d' => $tiene3d,
         ];
 
+        if ($tiene3d) {
+            $this->notificar(
+                'Juguete con modelo 3D existente',
+                "El producto \"{$producto->nombre}\" ya tiene un modelado 3D enlazado en el catálogo.",
+                'warning'
+            );
+        }
+
         $this->buscarProducto = '';
+        $this->resetErrorBag('productoId');
     }
 
     public function quitarProductoSeleccionado(): void
@@ -108,6 +117,8 @@ class Modelados3D extends Component
         $this->productoId = null;
         $this->productoSeleccionado = null;
         $this->buscarProducto = '';
+        $this->fotos = [];
+        $this->resetValidation();
     }
 
     public function procesarModelado(): void
@@ -173,8 +184,20 @@ class Modelados3D extends Component
                 return;
             }
 
-            $this->service->enlazar($modeladoId, (int) $modelado['producto_id']);
-            $this->notificar('Modelo enlazado', 'El producto ahora exhibirá este gemelo digital 3D en el catálogo.', 'success');
+            $productoId = (int) $modelado['producto_id'];
+            $yaTeniaOtro = $this->service->productoTieneModeloActivo($productoId, $modeladoId);
+
+            $this->service->enlazar($modeladoId, $productoId);
+
+            if ($yaTeniaOtro) {
+                $this->notificar(
+                    'Modelo 3D reemplazado',
+                    'El producto ya tenía un modelo 3D enlazado previamente, el cual fue desvinculado para activar este nuevo modelo.',
+                    'info'
+                );
+            } else {
+                $this->notificar('Modelo enlazado', 'El producto ahora exhibirá este gemelo digital 3D en el catálogo.', 'success');
+            }
         } catch (Exception $e) {
             $this->notificar('No se pudo enlazar', $e->getMessage(), 'error');
         }
@@ -194,9 +217,19 @@ class Modelados3D extends Component
     {
         try {
             $this->service->eliminar($modeladoId);
-            $this->notificar('Registro eliminado', 'El modelado 3D fue archivado correctamente.', 'success');
+            $this->notificar('Registro eliminado', 'El modelado 3D fue archivado en la papelera correctamente.', 'success');
         } catch (Exception $e) {
             $this->notificar('Error al eliminar', $e->getMessage(), 'error');
+        }
+    }
+
+    public function restaurar(int $modeladoId): void
+    {
+        try {
+            $this->service->restaurar($modeladoId);
+            $this->notificar('Modelo restaurado', 'El modelado 3D fue recuperado de la papelera.', 'success');
+        } catch (Exception $e) {
+            $this->notificar('Error al restaurar', $e->getMessage(), 'error');
         }
     }
 

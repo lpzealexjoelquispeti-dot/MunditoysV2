@@ -6,6 +6,7 @@ use App\Actions\Modelado3D\DesenlazarModeloProductoAction;
 use App\Actions\Modelado3D\EliminarModelado3DAction;
 use App\Actions\Modelado3D\EnlazarModeloProductoAction;
 use App\Actions\Modelado3D\IniciarModelado3DAction;
+use App\Actions\Modelado3D\RestaurarModelado3DAction;
 use App\Actions\Modelado3D\SincronizarEstadoModelado3DAction;
 use App\Models\Modelado3D;
 use App\Models\Producto;
@@ -24,6 +25,7 @@ class Modelado3DService
         private EnlazarModeloProductoAction $enlazarAction,
         private DesenlazarModeloProductoAction $desenlazarAction,
         private EliminarModelado3DAction $eliminarAction,
+        private RestaurarModelado3DAction $restaurarAction,
     ) {}
 
     /**
@@ -123,14 +125,33 @@ class Modelado3DService
     }
 
     /**
+     * Restaura un modelo 3D previamente enviado a la papelera.
+     */
+    public function restaurar(int $modeladoId): bool
+    {
+        $modelado = $this->repository->buscarConPapelera($modeladoId);
+        Gate::authorize('delete', $modelado);
+
+        return $this->restaurarAction->ejecutar($modelado);
+    }
+
+    /**
+     * Verifica si un producto ya tiene un modelo 3D activo y enlazado.
+     */
+    public function productoTieneModeloActivo(int $productoId, ?int $excluirModeladoId = null): bool
+    {
+        return $this->repository->productoTieneModeloActivo($productoId, $excluirModeladoId);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function reglasFormulario(): array
     {
         return [
+            'productoId' => ['required', 'integer', 'exists:productos,id'],
             'fotos' => ['required', 'array', 'min:2', 'max:4'],
             'fotos.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
-            'productoId' => ['nullable', 'integer', 'exists:productos,id'],
         ];
     }
 
@@ -140,13 +161,14 @@ class Modelado3DService
     public function mensajes(): array
     {
         return [
+            'productoId.required' => 'Debes seleccionar primero un producto del catálogo para generar su modelo 3D.',
+            'productoId.exists' => 'El producto seleccionado ya no existe en el catálogo.',
             'fotos.required' => 'Debes subir fotografías del producto desde diferentes ángulos.',
             'fotos.min' => 'Debes subir al menos 2 imágenes para el modelado multi-ángulo.',
             'fotos.max' => 'Tripo AI acepta un máximo de 4 imágenes por tarea.',
             'fotos.*.image' => 'Todos los archivos deben ser imágenes válidas.',
             'fotos.*.mimes' => 'Solo se admiten formatos JPG, PNG y WEBP.',
             'fotos.*.max' => 'Cada imagen no debe superar los 3 MB de tamaño.',
-            'productoId.exists' => 'El producto seleccionado ya no existe en el catálogo.',
         ];
     }
 }

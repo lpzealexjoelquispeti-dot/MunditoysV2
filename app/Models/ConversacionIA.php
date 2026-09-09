@@ -12,6 +12,7 @@ class ConversacionIA extends Model
     protected $table = 'conversaciones_ia';
 
     protected $fillable = [
+        'user_id',
         'usuario_id',
         'titulo',
         'metadata_jsonb',
@@ -23,7 +24,7 @@ class ConversacionIA extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function mensajes()

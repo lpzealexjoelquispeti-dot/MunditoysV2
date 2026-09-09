@@ -31,6 +31,8 @@ class Modelado3D extends Model
 
     public function producto()
     {
+        return $this->belongsTo(Producto::class);
+
         return $this->belongsTo(Producto::class)->withTrashed();
     }
 

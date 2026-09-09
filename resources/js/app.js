@@ -32,6 +32,7 @@ window.confirmarCrud = async (wire, accion, id, titulo, mensaje) => {
 };
 
 const cargarVisor3D = () => {
+    if (document.querySelector('[data-product-manager]')) import('@google/model-viewer');
     if (document.querySelector('[data-product-manager], [data-modelado-3d]')) import('@google/model-viewer');
 };
 

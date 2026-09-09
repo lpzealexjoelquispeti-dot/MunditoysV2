@@ -12,6 +12,7 @@ class InteraccionUsuario extends Model
     protected $table = 'interacciones_usuario';
 
     protected $fillable = [
+        'user_id',
         'usuario_id',
         'producto_id',
         'tipo_interaccion',
@@ -24,7 +25,7 @@ class InteraccionUsuario extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function producto()
