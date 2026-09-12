@@ -68,6 +68,18 @@ test('valida datos del empleado en español', function (string $campo, mixed $va
     ['rolUsuario', 'Cliente', 'Selecciona uno de los roles permitidos.'],
 ]);
 
+test('crear vendedor requiere asignar una sucursal con validacion en espanol', function (): void {
+    Mail::fake();
+    administradorAccesos();
+    $componente = Livewire::test(Usuarios::class);
+    foreach (datosEmpleadoAccesos(['rolUsuario' => 'Vendedor', 'sucursal_id' => null]) as $nombre => $dato) {
+        $componente->set($nombre, $dato);
+    }
+    $componente->call('guardar', 'AdminSegura123!')
+        ->assertHasErrors(['sucursal_id'])
+        ->assertSee('Debes asignar una sucursal de trabajo para el personal de ventas.');
+});
+
 test('rechaza contraseña administrativa incorrecta y limita los intentos', function (): void {
     Mail::fake();
     $admin = administradorAccesos();

@@ -12,7 +12,6 @@ class GenerarReportePdfAction
      * Genera un objeto PDF configurado en orientación horizontal con DomPDF.
      *
      * @param  string  $tipoReporte  ('ventas', 'interacciones', 'inventario', 'comercial')
-     * @param  array  $datos
      */
     public function execute(string $tipoReporte, array $datos): DomPdfWrapper
     {
@@ -21,6 +20,7 @@ class GenerarReportePdfAction
             'interacciones' => 'reportes.pdf.interacciones-pdf',
             'inventario' => 'reportes.pdf.inventario-pdf',
             'comercial' => 'reportes.pdf.comercial-pdf',
+            'logistica' => 'reportes.pdf.logistica-pdf',
             default => throw new InvalidArgumentException("Tipo de reporte inválido: {$tipoReporte}"),
         };
 
@@ -33,4 +33,3 @@ class GenerarReportePdfAction
             ]);
     }
 }
-

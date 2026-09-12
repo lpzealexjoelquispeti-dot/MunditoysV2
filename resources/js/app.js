@@ -2,11 +2,87 @@ import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { mundiToysGlbPreview } from './product-model-preview';
 import { mundiToysSucursalMap } from './sucursal-map';
+import { mundiToysDireccionMap } from './direccion-map';
+import { mundiToysLogisticaMap } from './logistica-map';
+import { mundiToysQrScanner } from './recojo-qr-scanner';
 import limiteLaPaz from '../geo/la-paz.json';
 import 'leaflet/dist/leaflet.css';
 
 window.mundiToysGlbPreview = mundiToysGlbPreview;
 window.mundiToysSucursalMap = (wire, inicial) => mundiToysSucursalMap(wire, inicial, limiteLaPaz);
+window.mundiToysDireccionMap = (wire, inicial) => mundiToysDireccionMap(wire, inicial, limiteLaPaz);
+window.mundiToysLogisticaMap = mundiToysLogisticaMap;
+window.mundiToysQrScanner = mundiToysQrScanner;
+
+window.mundiToysIndicadorMapa = async (elemento, inicialLat, inicialLng, nombre, direccion, informarError = () => {}) => {
+    try {
+        const modulo = await import('leaflet');
+        const L = modulo.default ?? modulo;
+        const lat = Number(inicialLat) || -16.500;
+        const lng = Number(inicialLng) || -68.130;
+
+        const mapa = L.map(elemento, {
+            scrollWheelZoom: false,
+            zoomControl: true,
+            minZoom: 10,
+            maxZoom: 18,
+        }).setView([lat, lng], 15);
+
+        const teselas = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            referrerPolicy: 'strict-origin-when-cross-origin',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+        }).addTo(mapa);
+        teselas.on('tileerror', () => informarError('No se pudo cargar el mapa. Puedes consultar la dirección de la sucursal o abrir el mapa externo.'));
+
+        const icono = L.divIcon({
+            className: 'mundi-pickup-pin',
+            html: '<div style="background-color:#ea580c; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; border:3px solid white; box-shadow:0 4px 12px rgba(0,0,0,0.35);">🏪</div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18],
+            popupAnchor: [0, -20],
+        });
+
+        const marcador = L.marker([lat, lng], { icon: icono }).addTo(mapa);
+        const contenidoPopup = (titulo, detalle) => {
+            const contenido = document.createElement('div');
+            const encabezado = document.createElement('strong');
+            encabezado.textContent = titulo || 'Sucursal MundiToys';
+            const texto = document.createElement('p');
+            texto.textContent = detalle || '';
+            contenido.append(encabezado, texto);
+            return contenido;
+        };
+        marcador.bindPopup(contenidoPopup(nombre, direccion));
+
+        const observer = new ResizeObserver(() => {
+            mapa?.invalidateSize({ pan: false });
+        });
+        observer.observe(elemento);
+
+        const ajusteInicial = setTimeout(() => mapa.invalidateSize({ pan: false }), 250);
+
+        return {
+            actualizar(nuevaLat, nuevaLng, nuevoNombre, nuevaDireccion) {
+                const nLat = Number(nuevaLat) || -16.500;
+                const nLng = Number(nuevaLng) || -68.130;
+                mapa.setView([nLat, nLng], 15);
+                marcador.setLatLng([nLat, nLng]);
+                marcador.setPopupContent(contenidoPopup(nuevoNombre, nuevaDireccion));
+                mapa.invalidateSize({ pan: false });
+            },
+            destruir() {
+                clearTimeout(ajusteInicial);
+                observer.disconnect();
+                mapa.remove();
+            },
+        };
+    } catch (e) {
+        console.error('Error al inicializar mapa:', e);
+        informarError('No se pudo iniciar el mapa. Puedes consultar la dirección de la sucursal o abrir el mapa externo.');
+        return null;
+    }
+};
 
 const opcionesAlerta = {
     confirmButtonColor: '#005ca8',
@@ -34,6 +110,9 @@ window.confirmarCrud = async (wire, accion, id, titulo, mensaje) => {
 const cargarVisor3D = () => {
     if (document.querySelector('[data-product-manager]')) import('@google/model-viewer');
     if (document.querySelector('[data-product-manager], [data-modelado-3d]')) import('@google/model-viewer');
+    if (document.querySelector('[data-product-manager], [data-modelado-3d], model-viewer')) {
+        import('@google/model-viewer');
+    }
 };
 
 window.confirmarAccesoUsuario = async (wire, accion, id = null) => {

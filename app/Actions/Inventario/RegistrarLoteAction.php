@@ -20,6 +20,15 @@ class RegistrarLoteAction
             'referencia_tipo' => 'ingreso_lote', 'referencia_id' => $lote->id,
         ]);
 
+        if (! empty($datos['precio_venta'])) {
+            $lote->loadMissing('inventario.producto');
+            if ($lote->inventario?->producto) {
+                $lote->inventario->producto->update([
+                    'precio_venta' => $datos['precio_venta'],
+                ]);
+            }
+        }
+
         return $lote;
     }
 }

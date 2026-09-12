@@ -21,4 +21,3 @@ class ReportePolicy
         return $this->viewAny($user);
     }
 }
-

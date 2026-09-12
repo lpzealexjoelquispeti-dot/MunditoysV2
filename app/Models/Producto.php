@@ -30,6 +30,27 @@ class Producto extends Model
         'precio_venta' => 'decimal:2',
     ];
 
+    public function getPrecioVentaAttribute($value): ?string
+    {
+        if ($value !== null && (float) $value > 0) {
+            return number_format((float) $value, 2, '.', '');
+        }
+
+        if ($this->relationLoaded('inventarios')) {
+            $primerLote = $this->inventarios
+                ->flatMap(fn ($inv) => $inv->lotes ?? collect())
+                ->filter(fn ($lote) => $lote->estado === 'activo' && (int) $lote->cantidad_disponible > 0 && $lote->precio_venta !== null)
+                ->sortBy('fecha_ingreso')
+                ->first();
+
+            if ($primerLote) {
+                return number_format((float) $primerLote->precio_venta, 2, '.', '');
+            }
+        }
+
+        return $value !== null ? number_format((float) $value, 2, '.', '') : null;
+    }
+
     public function categoria()
     {
         return $this->belongsTo(Categoria::class)->withTrashed();
@@ -46,6 +67,11 @@ class Producto extends Model
     }
 
     public function reseñas()
+    {
+        return $this->hasMany(Resena::class);
+    }
+
+    public function resenas()
     {
         return $this->hasMany(Resena::class);
     }

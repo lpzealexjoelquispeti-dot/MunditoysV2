@@ -11,6 +11,7 @@ class Carrito extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'usuario_id',
         'estado',
         'tipo_compra',
@@ -19,6 +20,8 @@ class Carrito extends Model
     public function usuario()
     {
         return $this->belongsTo(User::class);
+
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function detalles()

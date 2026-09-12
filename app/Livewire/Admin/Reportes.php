@@ -5,16 +5,15 @@ namespace App\Livewire\Admin;
 use App\Actions\Reportes\GenerarReporteExcelAction;
 use App\Actions\Reportes\GenerarReportePdfAction;
 use App\Services\ReporteService;
-use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Response;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 #[Title('Centro de Reportes y Analítica - MundiToys')]
 class Reportes extends Component
 {
+    #[Url]
     public string $seccion = 'ventas';
 
     public string $periodoPreset = 'este_mes';
@@ -39,11 +38,17 @@ class Reportes extends Component
 
     public function mount(): void
     {
+        $usuario = auth()->user();
+
         abort_unless(
-            auth()->user()->hasRole('Administrador') || auth()->user()->can('administrar accesos'),
+            $usuario && ($usuario->hasRole('Administrador') || $usuario->can('administrar accesos')),
             403,
             'No tienes autorización para consultar los reportes ejecutivos.'
         );
+
+        if (request()->query('seccion') && in_array(request()->query('seccion'), ['ventas', 'interacciones', 'inventario', 'comercial'])) {
+            $this->seccion = request()->query('seccion');
+        }
 
         $this->aplicarPreset('este_mes');
     }
@@ -132,7 +137,7 @@ class Reportes extends Component
         $fecha = now()->format('Ymd_His');
 
         return response()->streamDownload(
-            fn () => print($pdf->output()),
+            fn () => print ($pdf->output()),
             "munditoys_reporte_{$this->seccion}_{$fecha}.pdf",
             ['Content-Type' => 'application/pdf']
         );
@@ -145,7 +150,7 @@ class Reportes extends Component
         $fecha = now()->format('Ymd_His');
 
         return response()->streamDownload(
-            fn () => print($excelAction->render($this->seccion, $datos)),
+            fn () => print ($excelAction->render($this->seccion, $datos)),
             "munditoys_reporte_{$this->seccion}_{$fecha}.xls",
             [
                 'Content-Type' => 'application/vnd.ms-excel; charset=utf-8',

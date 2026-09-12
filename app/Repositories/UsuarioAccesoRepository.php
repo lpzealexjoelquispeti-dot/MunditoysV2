@@ -13,7 +13,7 @@ class UsuarioAccesoRepository
     /** @param array<string, string> $filtros */
     public function paginar(array $filtros): LengthAwarePaginator
     {
-        $query = User::query()->with('roles');
+        $query = User::query()->with(['roles', 'sucursal']);
         $query->whereHas('roles', function (Builder $roles) use ($filtros): void {
             if ($filtros['grupo'] === 'clientes') {
                 $roles->where('name', 'Cliente');

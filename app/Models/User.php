@@ -20,6 +20,7 @@ class User extends Authenticatable
         'ci_nit',
         'password',
         'tipo_usuario',
+        'sucursal_id',
         'foto',
         'estado',
     ];
@@ -41,7 +42,13 @@ class User extends Authenticatable
             'invitacion_enviada_at' => 'datetime',
             'invitacion_revocada_at' => 'datetime',
             'sesion_version' => 'integer',
+            'sucursal_id' => 'integer',
         ];
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class)->withTrashed();
     }
 
     public function direcciones()

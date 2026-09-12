@@ -24,5 +24,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::define('acceder panel', fn (User $user): bool => $acceso->puedeEntrar($user));
         Gate::define('administrar accesos', fn (User $user): bool => $acceso->puedeGestionarUsuarios($user));
+        Gate::define('acceder logistica', fn (User $user): bool => $acceso->puedeEntrar($user)
+            && $user->hasRole('Logistica') && ! $user->hasRole('Administrador'));
+        Gate::define('gestionar recojos', fn (User $user): bool => $acceso->puedeEntrar($user)
+            && $user->hasRole('Vendedor') && ! $user->hasRole('Administrador') && $user->can('crear ventas'));
     }
 }

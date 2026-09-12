@@ -19,10 +19,18 @@ class Entrega extends Model
         'hora_inicio',
         'hora_fin',
         'estado',
+        'motivo_cancelacion',
+        'notas_despacho',
+        'cancelado_at',
+        'entregado_at',
+        'destino_snapshot',
     ];
 
     protected $casts = [
+        'destino_snapshot' => 'array',
         'fecha_programada' => 'date',
+        'cancelado_at' => 'datetime',
+        'entregado_at' => 'datetime',
     ];
 
     public function venta()
@@ -49,5 +57,30 @@ class Entrega extends Model
             Sucursal::class,
             'sucursal_origen_id'
         )->withTrashed();
+    }
+
+    public function scopeDelDia($query, string $fecha)
+    {
+        return $query->whereDate('fecha_programada', $fecha);
+    }
+
+    public function scopePendientes($query)
+    {
+        return $query->where('estado', 'pendiente');
+    }
+
+    public function scopeEnCamino($query)
+    {
+        return $query->where('estado', 'en_camino');
+    }
+
+    public function scopeEntregados($query)
+    {
+        return $query->where('estado', 'entregado');
+    }
+
+    public function scopeCancelados($query)
+    {
+        return $query->where('estado', 'cancelado');
     }
 }

@@ -17,6 +17,7 @@ class GenerarReporteExcelAction
             'interacciones' => 'reportes.excel.interacciones-excel',
             'inventario' => 'reportes.excel.inventario-excel',
             'comercial' => 'reportes.excel.comercial-excel',
+            'logistica' => 'reportes.excel.logistica-excel',
             default => throw new InvalidArgumentException("Tipo de reporte inválido: {$tipoReporte}"),
         };
 
@@ -40,4 +41,3 @@ class GenerarReporteExcelAction
         ]);
     }
 }
-

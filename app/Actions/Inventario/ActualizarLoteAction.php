@@ -49,9 +49,18 @@ class ActualizarLoteAction
                 'cantidad_anterior' => $cantidadAnterior,
                 'cantidad_nueva' => $cantidadNueva,
                 'motivo' => $motivo,
-                'referencia_tipo' => 'edicion_lote',
+                'referencia_tipo' => 'ajuste_manual',
                 'referencia_id' => $lote->id,
             ]);
+
+            if (! empty($datos['precio_venta'])) {
+                $lote->loadMissing('inventario.producto');
+                if ($lote->inventario?->producto) {
+                    $lote->inventario->producto->update([
+                        'precio_venta' => $datos['precio_venta'],
+                    ]);
+                }
+            }
 
             return $loteActualizado;
         });

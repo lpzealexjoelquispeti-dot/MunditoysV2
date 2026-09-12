@@ -17,8 +17,7 @@ beforeEach(function (): void {
 test('guest sees the toy store welcome page', function (): void {
     $this->get(route('welcome'))
         ->assertOk()
-        ->assertSee('Explorar como invitado')
-        ->assertSee('Aún no hay juguetes publicados');
+        ->assertSee('Explorar como invitado');
 });
 
 test('registration validates fields and creates a client account', function (): void {

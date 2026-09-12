@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\Sucursal;
 use App\Services\UsuarioAccesoService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -48,6 +49,8 @@ class Usuarios extends Component
 
     public string $rolUsuario = 'Vendedor';
 
+    public ?int $sucursal_id = null;
+
     protected UsuarioAccesoService $service;
 
     public function boot(UsuarioAccesoService $service): void
@@ -67,7 +70,7 @@ class Usuarios extends Component
 
     protected function validationAttributes(): array
     {
-        return ['rolUsuario' => 'rol', 'grupo' => 'tipo de usuario', 'orden' => 'orden'];
+        return ['rolUsuario' => 'rol', 'grupo' => 'tipo de usuario', 'orden' => 'orden', 'sucursal_id' => 'sucursal'];
     }
 
     public function updated(string $property): void
@@ -99,7 +102,11 @@ class Usuarios extends Component
         $this->cerrarFormulario();
         $this->registroId = $id;
         foreach (array_keys($this->service->reglasFormulario(true)) as $campo) {
-            $this->{$campo} = (string) ($datos[$campo] ?? '');
+            if ($campo === 'sucursal_id') {
+                $this->sucursal_id = ! empty($datos['sucursal_id']) ? (int) $datos['sucursal_id'] : null;
+            } else {
+                $this->{$campo} = (string) ($datos[$campo] ?? '');
+            }
         }
         $this->mostrarFormulario = true;
     }
@@ -172,7 +179,7 @@ class Usuarios extends Component
 
     public function cerrarFormulario(): void
     {
-        $this->reset('mostrarFormulario', 'registroId', 'name', 'apellido_paterno', 'apellido_materno', 'telefono', 'email', 'rolUsuario');
+        $this->reset('mostrarFormulario', 'registroId', 'name', 'apellido_paterno', 'apellido_materno', 'telefono', 'email', 'rolUsuario', 'sucursal_id');
         $this->resetValidation();
     }
 
@@ -188,6 +195,7 @@ class Usuarios extends Component
         return view('livewire.admin.usuarios', [
             'usuarios' => $this->service->listar($this->only(array_keys($this->service->reglasFiltros()))),
             'roles' => UsuarioAccesoService::ROLES,
+            'sucursales' => Sucursal::query()->where('estado', true)->orderBy('nombre')->get(['id', 'nombre', 'ciudad']),
         ]);
     }
 

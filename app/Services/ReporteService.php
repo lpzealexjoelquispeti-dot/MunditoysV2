@@ -2,16 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Almacen;
 use App\Models\Categoria;
 use App\Models\ConversacionIA;
-use App\Models\DetalleVenta;
+use App\Models\Entrega;
 use App\Models\InteraccionUsuario;
 use App\Models\Inventario;
-use App\Models\LoteInventario;
 use App\Models\MensajeIA;
 use App\Models\MovimientoInventario;
-use App\Models\Producto;
 use App\Models\Resena;
 use App\Models\Sucursal;
 use App\Models\User;
@@ -30,6 +27,7 @@ class ReporteService
             'sucursales' => Sucursal::orderBy('nombre')->get(['id', 'nombre', 'ciudad']),
             'categorias' => Categoria::orderBy('nombre')->get(['id', 'nombre']),
             'vendedores' => User::role(['Vendedor', 'Administrador'])->orderBy('name')->get(['id', 'name']),
+            'choferes' => User::role(['Logistica', 'Administrador'])->orderBy('name')->get(['id', 'name']),
             'metodos_pago' => [
                 'efectivo' => 'Efectivo',
                 'qr' => 'Transferencia QR',
@@ -43,6 +41,19 @@ class ReporteService
                 'agregar_carrito' => 'Añadidos al Carrito',
                 'busqueda' => 'Búsquedas en Catálogo',
                 'clic_banner' => 'Clics Promocionales',
+            ],
+            'estados_entrega' => [
+                'pendiente' => 'Pendiente',
+                'en_camino' => 'En Camino',
+                'entregado' => 'Entregado',
+                'cancelado' => 'Cancelado',
+            ],
+            'turnos_horarios' => [
+                '12:00' => '12:00 - 12:40 (Turno 1)',
+                '13:30' => '13:30 - 14:10 (Turno 2)',
+                '15:00' => '15:00 - 15:40 (Turno 3)',
+                '16:30' => '16:30 - 17:10 (Turno 4)',
+                '18:00' => '18:00 - 18:40 (Turno 5)',
             ],
         ];
     }
@@ -612,5 +623,211 @@ class ReporteService
             'distribucion_estrellas' => $distribucionEstrellas,
         ];
     }
-}
 
+    /**
+     * Reporte 5: Logística, Despachos, Rutas y Cumplimiento de Entregas.
+     */
+    public function obtenerReporteLogistica(array $filtros): array
+    {
+        $fechaDesde = ! empty($filtros['fecha_desde']) ? Carbon::parse($filtros['fecha_desde'])->startOfDay() : now()->startOfMonth();
+        $fechaHasta = ! empty($filtros['fecha_hasta']) ? Carbon::parse($filtros['fecha_hasta'])->endOfDay() : now()->endOfDay();
+        $sucursalId = $filtros['sucursal_id'] ?? null;
+        $choferId = $filtros['empleado_id'] ?? $filtros['chofer_id'] ?? null;
+        $estado = $filtros['estado_entrega'] ?? $filtros['estado'] ?? null;
+        $turnoHorario = $filtros['turno_horario'] ?? null;
+
+        $query = Entrega::query()
+            ->with([
+                'venta.cliente',
+                'empleado',
+                'direccion',
+                'sucursal',
+                'venta.detalles.producto',
+            ])
+            ->whereDate('fecha_programada', '>=', $fechaDesde->toDateString())
+            ->whereDate('fecha_programada', '<=', $fechaHasta->toDateString());
+
+        if ($sucursalId && $sucursalId !== 'todos') {
+            $query->where('sucursal_origen_id', $sucursalId);
+        }
+
+        if ($choferId && $choferId !== 'todos') {
+            $query->where('empleado_id', $choferId);
+        }
+
+        if ($estado && $estado !== 'todos') {
+            $query->where('estado', $estado);
+        }
+
+        if ($turnoHorario && $turnoHorario !== 'todos') {
+            $horaLimpia = substr((string) $turnoHorario, 0, 5);
+            $query->where('hora_inicio', 'like', "{$horaLimpia}%");
+        }
+
+        $entregas = $query->orderBy('fecha_programada', 'desc')
+            ->orderBy('hora_inicio', 'asc')
+            ->get();
+
+        $totalDespachos = $entregas->count();
+        $totalEntregados = $entregas->where('estado', 'entregado')->count();
+        $totalEnCamino = $entregas->where('estado', 'en_camino')->count();
+        $totalPendientes = $entregas->where('estado', 'pendiente')->count();
+        $totalCancelados = $entregas->where('estado', 'cancelado')->count();
+
+        $tasaEfectividad = $totalDespachos > 0
+            ? round(($totalEntregados / $totalDespachos) * 100, 1)
+            : 0.0;
+
+        $tasaCancelacion = $totalDespachos > 0
+            ? round(($totalCancelados / $totalDespachos) * 100, 1)
+            : 0.0;
+
+        $montoTotalDespachado = (float) $entregas->where('estado', 'entregado')->sum(fn ($e) => (float) ($e->venta?->total ?? 0));
+
+        // Cronología por Día
+        $despachosPorDia = [];
+        $cursorFecha = $fechaDesde->copy();
+        while ($cursorFecha->lte($fechaHasta)) {
+            $clave = $cursorFecha->format('Y-m-d');
+            $despachosPorDia[$clave] = [
+                'fecha' => $clave,
+                'etiqueta' => $cursorFecha->format('d/m'),
+                'total' => 0,
+                'entregados' => 0,
+                'cancelados' => 0,
+                'pendientes' => 0,
+            ];
+            $cursorFecha->addDay();
+        }
+
+        // Distribución por Turno de 90 min
+        $turnosBase = [
+            '12:00' => ['etiqueta' => '12:00 - 12:40 (Turno 1)', 'conteo' => 0, 'entregados' => 0, 'cancelados' => 0],
+            '13:30' => ['etiqueta' => '13:30 - 14:10 (Turno 2)', 'conteo' => 0, 'entregados' => 0, 'cancelados' => 0],
+            '15:00' => ['etiqueta' => '15:00 - 15:40 (Turno 3)', 'conteo' => 0, 'entregados' => 0, 'cancelados' => 0],
+            '16:30' => ['etiqueta' => '16:30 - 17:10 (Turno 4)', 'conteo' => 0, 'entregados' => 0, 'cancelados' => 0],
+            '18:00' => ['etiqueta' => '18:00 - 18:40 (Turno 5)', 'conteo' => 0, 'entregados' => 0, 'cancelados' => 0],
+            'otro' => ['etiqueta' => 'Horario Especial / Mostrador', 'conteo' => 0, 'entregados' => 0, 'cancelados' => 0],
+        ];
+
+        // Distribución por Zonas de La Paz
+        $despachosPorZona = [];
+
+        // Rendimiento por Chofer
+        $despachosPorChofer = [];
+
+        // Motivos de Cancelación
+        $motivosCancelacion = [];
+
+        foreach ($entregas as $entrega) {
+            $fechaClave = $entrega->fecha_programada ? Carbon::parse($entrega->fecha_programada)->format('Y-m-d') : null;
+            if ($fechaClave && isset($despachosPorDia[$fechaClave])) {
+                $despachosPorDia[$fechaClave]['total']++;
+                if ($entrega->estado === 'entregado') {
+                    $despachosPorDia[$fechaClave]['entregados']++;
+                } elseif ($entrega->estado === 'cancelado') {
+                    $despachosPorDia[$fechaClave]['cancelados']++;
+                } else {
+                    $despachosPorDia[$fechaClave]['pendientes']++;
+                }
+            }
+
+            // Turno
+            $horaInicio = $entrega->hora_inicio ? substr((string) $entrega->hora_inicio, 0, 5) : 'otro';
+            $turnoClave = isset($turnosBase[$horaInicio]) ? $horaInicio : 'otro';
+            $turnosBase[$turnoClave]['conteo']++;
+            if ($entrega->estado === 'entregado') {
+                $turnosBase[$turnoClave]['entregados']++;
+            } elseif ($entrega->estado === 'cancelado') {
+                $turnosBase[$turnoClave]['cancelados']++;
+            }
+
+            // Zona
+            $zona = $entrega->direccion?->zona ?? ($entrega->sucursal?->zona ? 'Retiro en '.$entrega->sucursal->zona : 'Sin Zona');
+            if (! isset($despachosPorZona[$zona])) {
+                $despachosPorZona[$zona] = ['zona' => $zona, 'total' => 0, 'entregados' => 0, 'cancelados' => 0];
+            }
+            $despachosPorZona[$zona]['total']++;
+            if ($entrega->estado === 'entregado') {
+                $despachosPorZona[$zona]['entregados']++;
+            } elseif ($entrega->estado === 'cancelado') {
+                $despachosPorZona[$zona]['cancelados']++;
+            }
+
+            // Chofer
+            $choferIdKey = $entrega->empleado_id ?? 0;
+            $choferNombre = $entrega->empleado?->name ?? 'Sin chofer asignado';
+            if (! isset($despachosPorChofer[$choferIdKey])) {
+                $despachosPorChofer[$choferIdKey] = [
+                    'id' => $choferIdKey,
+                    'nombre' => $choferNombre,
+                    'total' => 0,
+                    'entregados' => 0,
+                    'cancelados' => 0,
+                    'pendientes' => 0,
+                    'tasa_exito' => 0.0,
+                ];
+            }
+            $despachosPorChofer[$choferIdKey]['total']++;
+            if ($entrega->estado === 'entregado') {
+                $despachosPorChofer[$choferIdKey]['entregados']++;
+            } elseif ($entrega->estado === 'cancelado') {
+                $despachosPorChofer[$choferIdKey]['cancelados']++;
+            } else {
+                $despachosPorChofer[$choferIdKey]['pendientes']++;
+            }
+
+            // Motivo de cancelación
+            if ($entrega->estado === 'cancelado' && $entrega->motivo_cancelacion) {
+                $motivo = trim((string) $entrega->motivo_cancelacion);
+                $motivosCancelacion[$motivo] = ($motivosCancelacion[$motivo] ?? 0) + 1;
+            }
+        }
+
+        // Calcular porcentajes por chofer
+        foreach ($despachosPorChofer as $k => $ch) {
+            $despachosPorChofer[$k]['tasa_exito'] = $ch['total'] > 0
+                ? round(($ch['entregados'] / $ch['total']) * 100, 1)
+                : 0.0;
+        }
+
+        // Ordenar zonas por total descendente
+        uasort($despachosPorZona, fn ($a, $b) => $b['total'] <=> $a['total']);
+        foreach ($despachosPorZona as $z => $zd) {
+            $despachosPorZona[$z]['porcentaje'] = $totalDespachos > 0
+                ? round(($zd['total'] / $totalDespachos) * 100, 1)
+                : 0.0;
+        }
+
+        arsort($motivosCancelacion);
+
+        $serieCronologica = array_values(array_slice($despachosPorDia, -14, 14, true));
+
+        return [
+            'filtros_aplicados' => [
+                'fecha_desde' => $fechaDesde->format('d/m/Y'),
+                'fecha_hasta' => $fechaHasta->format('d/m/Y'),
+                'sucursal' => $sucursalId && $sucursalId !== 'todos' ? Sucursal::find($sucursalId)?->nombre : 'Todas las sucursales',
+                'chofer' => $choferId && $choferId !== 'todos' ? User::find($choferId)?->name : 'Todos los choferes',
+                'estado' => $estado && $estado !== 'todos' ? ucfirst($estado) : 'Todos los estados',
+                'turno' => $turnoHorario && $turnoHorario !== 'todos' ? $turnosBase[$turnoHorario]['etiqueta'] ?? $turnoHorario : 'Todos los turnos',
+            ],
+            'kpis' => [
+                'total_despachos' => $totalDespachos,
+                'total_entregados' => $totalEntregados,
+                'total_en_camino' => $totalEnCamino,
+                'total_pendientes' => $totalPendientes,
+                'total_cancelados' => $totalCancelados,
+                'tasa_efectividad' => $tasaEfectividad,
+                'tasa_cancelacion' => $tasaCancelacion,
+                'monto_total_despachado' => round($montoTotalDespachado, 2),
+            ],
+            'serie_cronologica' => $serieCronologica,
+            'despachos_por_turno' => $turnosBase,
+            'despachos_por_zona' => array_values($despachosPorZona),
+            'despachos_por_chofer' => array_values($despachosPorChofer),
+            'motivos_cancelacion' => $motivosCancelacion,
+            'entregas_registros' => $entregas->take(60),
+        ];
+    }
+}

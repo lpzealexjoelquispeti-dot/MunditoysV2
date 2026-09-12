@@ -19,6 +19,7 @@
     "dependencies": {
         "@google/model-viewer": "^4.3.1",
         "alpinejs": "^3.17.1",
+        "html5-qrcode": "^2.3.8",
         "leaflet": "1.9.4",
         "sweetalert2": "^11.26.25"
     }

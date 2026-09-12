@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             CategoriasSeeder::class,
             MarcasSeeder::class,
+            MarvelCatalogSeeder::class,
+            VentasReportesSeeder::class,
         ]);
     }
 }

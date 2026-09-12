@@ -69,6 +69,7 @@ class UsuarioAccesoService
             'telefono' => ['bail', 'required', 'string', 'regex:/\A(?:\+591[ -]?)?[67]\d{7}\z/'],
             'email' => ['bail', 'required', 'string', 'email:rfc', 'max:254'],
             'rolUsuario' => ['required', Rule::in($edicion ? [...self::ROLES, 'Cliente'] : self::ROLES)],
+            'sucursal_id' => ['bail', 'required_if:rolUsuario,Vendedor', 'nullable', 'exists:sucursales,id'],
         ];
     }
 
@@ -83,6 +84,8 @@ class UsuarioAccesoService
             'apellido_materno.regex' => 'Escribe un apellido válido, sin números ni símbolos extraños.',
             'telefono.regex' => 'El celular debe tener 8 dígitos y comenzar con 6 o 7. El prefijo +591 es opcional.',
             'rolUsuario.in' => 'Selecciona uno de los roles permitidos.',
+            'sucursal_id.required_if' => 'Debes asignar una sucursal de trabajo para el personal de ventas.',
+            'sucursal_id.exists' => 'La sucursal seleccionada no es válida.',
         ];
     }
 
@@ -278,10 +281,14 @@ class UsuarioAccesoService
         if (isset($datos['email']) && is_string($datos['email'])) {
             $datos['email'] = mb_strtolower($datos['email']);
         }
-        $validado = Validator::make($datos, $this->reglasFormulario($edicion), $this->mensajes(), ['rolUsuario' => 'rol'])->validate();
+        $validado = Validator::make($datos, $this->reglasFormulario($edicion), $this->mensajes(), [
+            'rolUsuario' => 'rol',
+            'sucursal_id' => 'sucursal',
+        ])->validate();
         $validado['apellido_paterno'] = ($validado['apellido_paterno'] ?? '') ?: null;
         $validado['apellido_materno'] = ($validado['apellido_materno'] ?? '') ?: null;
         $validado['telefono'] = preg_replace('/\A\+591[ -]?/', '', $validado['telefono']);
+        $validado['sucursal_id'] = ! empty($validado['sucursal_id']) ? (int) $validado['sucursal_id'] : null;
 
         return $validado;
     }
@@ -295,10 +302,14 @@ class UsuarioAccesoService
                 : ($usuario->invitacion_expira_at?->isPast() ? 'Invitación vencida' : 'Pendiente de activación');
         }
 
-        return $usuario->only(['id', 'name', 'apellido_paterno', 'apellido_materno', 'email', 'telefono', 'estado', 'invitacion_pendiente'])
-            + ['rolUsuario' => $usuario->roles->first()?->name ?? '', 'situacion' => $situacion,
+        return $usuario->only(['id', 'name', 'apellido_paterno', 'apellido_materno', 'email', 'telefono', 'estado', 'invitacion_pendiente', 'sucursal_id'])
+            + [
+                'rolUsuario' => $usuario->roles->first()?->name ?? '',
+                'sucursal_nombre' => $usuario->sucursal?->nombre ?? 'Sin sucursal asignada',
+                'situacion' => $situacion,
                 'enviada' => $usuario->invitacion_enviada_at?->format('d/m/Y H:i'),
                 'expira' => $usuario->invitacion_expira_at?->format('d/m/Y H:i'),
-                'revocada' => $usuario->invitacion_revocada_at !== null];
+                'revocada' => $usuario->invitacion_revocada_at !== null,
+            ];
     }
 }

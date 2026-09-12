@@ -5,6 +5,7 @@ use App\Models\Almacen;
 use App\Models\Categoria;
 use App\Models\ConversacionIA;
 use App\Models\DetalleVenta;
+use App\Models\Direccion;
 use App\Models\Entrega;
 use App\Models\InteraccionUsuario;
 use App\Models\Inventario;
@@ -270,4 +271,78 @@ test('descarga de reporte en excel responde con tipo de contenido enriquecido pa
         ->call('exportarExcel');
 
     $response->assertFileDownloaded();
+});
+
+test('calcula reporte de logistica turnos de 90 min y zonas de la paz', function () {
+    $chofer = User::factory()->create(['name' => 'Carlos Chofer']);
+    $chofer->assignRole('Logistica');
+
+    $cliente = User::factory()->create();
+    $cliente->assignRole('Cliente');
+
+    $sucursal = Sucursal::factory()->create(['nombre' => 'Sucursal Central', 'ciudad' => 'La Paz']);
+
+    $direccion = Direccion::create([
+        'user_id' => $cliente->id,
+        'nombre_referencia' => 'Depto Calacoto',
+        'direccion_completa' => 'Calle 15 de Calacoto #100',
+        'zona' => 'Calacoto',
+        'ciudad' => 'La Paz',
+        'latitud' => -16.5400,
+        'longitud' => -68.0800,
+        'es_principal' => true,
+    ]);
+
+    $venta1 = Venta::factory()->create([
+        'cliente_id' => $cliente->id,
+        'total' => 250.00,
+        'fecha_venta' => now(),
+    ]);
+
+    $venta2 = Venta::factory()->create([
+        'cliente_id' => $cliente->id,
+        'total' => 180.00,
+        'fecha_venta' => now(),
+    ]);
+
+    // Entrega 1: Entregada en turno 12:00
+    Entrega::create([
+        'venta_id' => $venta1->id,
+        'empleado_id' => $chofer->id,
+        'direccion_id' => $direccion->id,
+        'sucursal_origen_id' => $sucursal->id,
+        'fecha_programada' => now()->toDateString(),
+        'hora_inicio' => '12:00:00',
+        'hora_fin' => '12:40:00',
+        'estado' => 'entregado',
+        'tipo_entrega' => 'domicilio',
+    ]);
+
+    // Entrega 2: Cancelada en turno 13:30
+    Entrega::create([
+        'venta_id' => $venta2->id,
+        'empleado_id' => $chofer->id,
+        'direccion_id' => $direccion->id,
+        'sucursal_origen_id' => $sucursal->id,
+        'fecha_programada' => now()->toDateString(),
+        'hora_inicio' => '13:30:00',
+        'hora_fin' => '14:10:00',
+        'estado' => 'cancelado',
+        'motivo_cancelacion' => 'Cliente ausente en domicilio',
+        'tipo_entrega' => 'domicilio',
+    ]);
+
+    $service = app(ReporteService::class);
+    $reporte = $service->obtenerReporteLogistica([
+        'fecha_desde' => now()->startOfMonth()->toDateString(),
+        'fecha_hasta' => now()->endOfDay()->toDateString(),
+    ]);
+
+    expect($reporte['kpis']['total_despachos'])->toBeGreaterThanOrEqual(2)
+        ->and($reporte['kpis']['total_entregados'])->toBeGreaterThanOrEqual(1)
+        ->and($reporte['kpis']['total_cancelados'])->toBeGreaterThanOrEqual(1)
+        ->and($reporte['kpis']['monto_total_despachado'])->toBeGreaterThanOrEqual(250.00)
+        ->and($reporte['despachos_por_turno']['12:00']['conteo'])->toBeGreaterThanOrEqual(1)
+        ->and($reporte['despachos_por_turno']['13:30']['conteo'])->toBeGreaterThanOrEqual(1)
+        ->and($reporte['motivos_cancelacion'])->toHaveKey('Cliente ausente en domicilio');
 });

@@ -40,4 +40,14 @@ return [
         'api_url' => env('TRIPO_API_URL', 'https://api.tripo3d.ai/v2/openapi'),
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
+    'delivery' => [
+        'routing_url' => env('DELIVERY_ROUTING_URL', env('APP_ENV') === 'local' ? 'https://router.project-osrm.org' : null),
+    ],
+
 ];

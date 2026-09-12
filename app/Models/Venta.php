@@ -19,10 +19,14 @@ class Venta extends Model
         'subtotal',
         'descuento',
         'total',
+        'costo_envio',
+        'cotizacion_envio',
         'fecha_venta',
     ];
 
     protected $casts = [
+        'costo_envio' => 'decimal:2',
+        'cotizacion_envio' => 'array',
         'subtotal' => 'decimal:2',
         'descuento' => 'decimal:2',
         'total' => 'decimal:2',

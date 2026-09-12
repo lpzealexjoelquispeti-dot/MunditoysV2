@@ -2,6 +2,7 @@
 
 namespace App\Actions\Inventario;
 
+use App\Models\Inventario;
 use App\Models\LoteInventario;
 use App\Repositories\InventarioRepository;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +49,13 @@ class AjustarPrecioLotesAnterioresAction
                     'precio_anterior' => $precioAnterior,
                     'nuevo_precio' => $nuevoPrecioVenta,
                 ];
+            }
+
+            $inventario = Inventario::with('producto')->find($inventarioId);
+            if ($inventario?->producto) {
+                $inventario->producto->update([
+                    'precio_venta' => $nuevoPrecioVenta,
+                ]);
             }
 
             return $ajustados;

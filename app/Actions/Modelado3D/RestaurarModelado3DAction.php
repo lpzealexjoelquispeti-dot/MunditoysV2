@@ -11,4 +11,3 @@ class RestaurarModelado3DAction
         return (bool) $modelado->restore();
     }
 }
-

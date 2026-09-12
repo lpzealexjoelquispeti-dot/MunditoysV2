@@ -44,8 +44,18 @@ class ProductoRepository
             $consulta->where('categoria_id', $categoriaId);
         }
 
+        if (($marcaId = $filtros['marca_id'] ?? null) !== null && $marcaId !== '') {
+            $consulta->where('marca_id', $marcaId);
+        }
+
         if (($edad = $filtros['edad'] ?? null) !== null && $edad !== '') {
             $consulta->where('edad_recomendada', $edad);
+        }
+
+        if (! empty($filtros['solo_3d'])) {
+            $consulta->whereHas('modelos3D', function (Builder $query): void {
+                $query->whereNotNull('modelo_glb_path');
+            });
         }
 
         $estado = $filtros['estado'] ?? 'activo';
