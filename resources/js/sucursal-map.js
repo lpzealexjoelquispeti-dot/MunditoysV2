@@ -23,6 +23,7 @@ export function mundiToysSucursalMap(wire, inicial, limite, cargarLeaflet = () =
                 mapa.setMaxBounds(zona.getBounds().pad(0.05));
                 const teselas = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
+                    referrerPolicy: 'strict-origin-when-cross-origin',
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
                 }).addTo(mapa);
                 teselas.on('tileerror', () => {

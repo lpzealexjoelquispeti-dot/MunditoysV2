@@ -13,6 +13,6 @@
         @if ($registroId)
             <x-admin-field label="Estado *" name="estado"><select wire:model.live="estado" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm"><option value="1">Activa</option><option value="0">Inactiva</option></select></x-admin-field>
         @else<p class="rounded-xl bg-blue-50 p-3 text-sm text-brand-blue">Se creará activa automáticamente.</p>@endif
-        <footer class="flex justify-end gap-3 border-t border-slate-100 bg-white pt-4"><button type="button" wire:click="cerrarFormulario" class="min-h-11 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-bold">Cancelar</button><button type="submit" :disabled="subiendo" wire:loading.attr="disabled" wire:target="guardar,imagen" class="min-h-11 rounded-xl bg-brand-red px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50">Guardar {{ $singular }}</button></footer>
+        <footer class="flex justify-end gap-3 border-t border-slate-100 bg-white pt-4"><button type="button" wire:click="cerrarFormulario" class="min-h-11 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold">Cancelar</button><button type="submit" :disabled="subiendo" wire:loading.attr="disabled" wire:target="guardar,imagen" class="min-h-11 rounded-xl bg-brand-red px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">Guardar {{ $singular }}</button></footer>
     </form>
 </x-admin-modal>

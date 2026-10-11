@@ -43,8 +43,8 @@ test('usuario no autenticado o sin rol administrador no puede acceder a reportes
 test('administrador puede acceder a la pantalla principal de reportes y analitica', function () {
     $this->get(route('admin.reportes'))
         ->assertOk()
-        ->assertSee('Analítica y Reportes Ejecutivos')
-        ->assertSee('Ventas y Rentabilidad (FIFO)')
+        ->assertSee('Ingresos y ganancia')
+        ->assertSee('Ventas')
         ->assertSee('Descargar PDF')
         ->assertSee('Descargar Excel');
 });
@@ -56,7 +56,7 @@ test('componente livewire navega reactivamente entre las cuatro secciones', func
         ->call('cambiarSeccion', 'interacciones')
         ->assertSet('seccion', 'interacciones')
         ->assertSee('Visor 3D Interactivo')
-        ->assertSee('Tópicos Recurrentes en el Asistente IA')
+        ->assertSee('Temas del asistente')
         ->call('cambiarSeccion', 'inventario')
         ->assertSet('seccion', 'inventario')
         ->assertSee('Valuación Costo FIFO')

@@ -91,7 +91,7 @@ test('logistica puede ver el modulo y administrador tiene acceso denegado', func
     $this->actingAs($this->chofer)
         ->get(route('admin.logistica'))
         ->assertOk()
-        ->assertSee('Logística de Entregas');
+        ->assertSee('Logística');
 
     $this->actingAs($this->admin)
         ->get(route('admin.logistica'))
@@ -241,9 +241,9 @@ test('el usuario de logistica puede acceder a la pestaña de reportes y ver metr
     Livewire::test(Logistica::class)
         ->call('cambiarPestana', 'reportes')
         ->assertSet('pestanaActiva', 'reportes')
-        ->assertSee('Reportes de Logística y Envíos')
+        ->assertSee('Reportes de logística')
         ->assertSee('Total Despachos')
-        ->assertSee('Distribución por Turnos')
+        ->assertSee('Por turno')
         ->assertSee('Descargar PDF')
         ->assertSee('Descargar Excel');
 });
@@ -273,14 +273,14 @@ test('los botones de logistica permiten recorrer mapa historial reportes y table
         ->call('cambiarPestana', 'mapa')
         ->assertSee('mundiToysLogisticaMap')
         ->call('cambiarPestana', 'completados')
-        ->assertSee('Historial de Entregas Completadas')
+        ->assertSee('Entregas completadas')
         ->assertSee($this->venta->numero_venta)
         ->call('cambiarPestana', 'reportes')
-        ->assertSee('Reportes de Logística y Envíos')
+        ->assertSee('Reportes de logística')
         ->call('cambiarPestana', 'tablero')
-        ->assertSee('No hay entregas registradas para esta fecha')
-        ->assertDontSee('Reportes de Logística y Envíos')
-        ->assertDontSee('Historial de Entregas Completadas');
+        ->assertSee('Sin entregas')
+        ->assertDontSee('Reportes de logística')
+        ->assertDontSee('Entregas completadas');
 });
 
 test('logistica vuelve a comprobar la autorizacion antes de ejecutar acciones', function (): void {

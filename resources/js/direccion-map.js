@@ -15,7 +15,7 @@ export function mundiToysDireccionMap(wire, inicial, limite, cargarLeaflet = () 
         async init() {
             try {
                 const modulo = await cargarLeaflet();
-                if (destruido) return;
+                if (destruido || mapa) return;
                 L = modulo.default ?? modulo;
 
                 mapa = L.map(this.$refs.mapaDireccion, {
@@ -38,10 +38,14 @@ export function mundiToysDireccionMap(wire, inicial, limite, cargarLeaflet = () 
 
                 mapa.setMaxBounds(zona.getBounds().pad(0.08));
 
-                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                const teselas = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
+                    referrerPolicy: 'strict-origin-when-cross-origin',
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
                 }).addTo(mapa);
+                teselas.on('tileerror', () => {
+                    if (!destruido) this.error = 'No se pudieron cargar las imágenes del mapa. Revisa tu conexión y recarga la página.';
+                });
 
                 const lat = Number(inicial.latitud) || -16.4950000;
                 const lng = Number(inicial.longitud) || -68.1330000;
@@ -108,39 +112,50 @@ export function mundiToysDireccionMap(wire, inicial, limite, cargarLeaflet = () 
             this.obteniendoGps = true;
             this.error = '';
 
-            navigator.geolocation.getCurrentPosition(
-                async (pos) => {
-                    this.obteniendoGps = false;
-                    const lat = Number(pos.coords.latitude.toFixed(7));
-                    const lng = Number(pos.coords.longitude.toFixed(7));
+            const alObtener = async (pos) => {
+                this.obteniendoGps = false;
+                const lat = Number(pos.coords.latitude.toFixed(7));
+                const lng = Number(pos.coords.longitude.toFixed(7));
 
-                    if (!dentroDelLimite(limite.geometry, lat, lng)) {
-                        this.error = 'Tu ubicación actual detectada está fuera del municipio de La Paz. Por favor selecciona tu dirección dentro de los límites de La Paz.';
+                if (!dentroDelLimite(limite.geometry, lat, lng)) {
+                    this.error = 'Tu ubicación actual detectada está fuera del municipio de La Paz. Por favor selecciona tu dirección dentro de los límites de La Paz.';
+                    return;
+                }
+
+                this.error = '';
+                mapa?.setView([lat, lng], 16);
+                this.colocarMarcador([lat, lng]);
+                await wire.seleccionarUbicacion(lat.toFixed(7), lng.toFixed(7));
+            };
+
+            const alFallar = (err) => {
+                this.obteniendoGps = false;
+                if (err.code === 1) {
+                    this.error = 'Permiso denegado por el navegador para acceder a tu ubicación actual. Puedes hacer clic en el mapa para ubicar tu dirección.';
+                } else if (err.code === 2) {
+                    this.error = 'No fue posible determinar tu ubicación GPS. Por favor ubica tu dirección en el mapa.';
+                } else if (err.code === 3) {
+                    this.error = 'El tiempo para obtener tu ubicación expiró. Intenta de nuevo o ubica tu dirección en el mapa.';
+                } else {
+                    this.error = 'No se pudo obtener la ubicación actual. Ubica tu dirección directamente en el mapa.';
+                }
+            };
+
+            // Las laptops sin GPS suelen agotar el tiempo en alta precisión: se reintenta con la ubicación por Wi-Fi/red.
+            navigator.geolocation.getCurrentPosition(
+                alObtener,
+                (err) => {
+                    if (err.code === 1) {
+                        alFallar(err);
                         return;
                     }
-
-                    this.error = '';
-                    mapa?.setView([lat, lng], 16);
-                    this.colocarMarcador([lat, lng]);
-                    await wire.seleccionarUbicacion(lat.toFixed(7), lng.toFixed(7));
+                    navigator.geolocation.getCurrentPosition(alObtener, alFallar, { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 });
                 },
-                (err) => {
-                    this.obteniendoGps = false;
-                    if (err.code === 1) {
-                        this.error = 'Permiso denegado por el navegador para acceder a tu ubicación actual. Puedes hacer clic en el mapa para ubicar tu dirección.';
-                    } else if (err.code === 2) {
-                        this.error = 'No fue posible determinar tu ubicación GPS. Por favor ubica tu dirección en el mapa.';
-                    } else if (err.code === 3) {
-                        this.error = 'El tiempo para obtener tu ubicación expiró. Intenta de nuevo o ubica tu dirección en el mapa.';
-                    } else {
-                        this.error = 'No se pudo obtener la ubicación actual. Ubica tu dirección directamente en el mapa.';
-                    }
-                },
-                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
             );
         },
 
-        destruir() {
+        destroy() {
             destruido = true;
             observador?.disconnect();
             mapa?.remove();

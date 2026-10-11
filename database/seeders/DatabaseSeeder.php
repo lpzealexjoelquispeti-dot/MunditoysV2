@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             MarcasSeeder::class,
             MarvelCatalogSeeder::class,
             VentasReportesSeeder::class,
+            HistorialJuguetesSeeder::class,
+            BaseConocimientoIASeeder::class,
         ]);
     }
 }

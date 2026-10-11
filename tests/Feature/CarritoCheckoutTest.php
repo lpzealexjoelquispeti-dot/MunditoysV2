@@ -53,7 +53,7 @@ test('el cliente puede ver la pagina del carrito con los juguetes seleccionados 
         ->assertSee('MT-MONOP-BOL-100')
         ->assertSee('Bs. 199.90')
         ->assertSee('Bs. 399.80')
-        ->assertSee('Continuar al Pago');
+        ->assertSee('Continuar al pago');
 });
 
 test('el cliente puede incrementar, decrementar y eliminar productos del carrito interactivamente', function (): void {
@@ -75,7 +75,7 @@ test('el cliente puede incrementar, decrementar y eliminar productos del carrito
         ->call('decrementar', $producto->id)
         ->assertSee('Bs. 150.00')
         ->call('eliminar', $producto->id)
-        ->assertSee('Tu carrito está actualmente vacío');
+        ->assertSee('Tu carrito está vacío');
 });
 
 test('el cliente completa el checkout con recojo en sucursal, generando venta, entrega, notificacion y factura', function (): void {
@@ -217,12 +217,12 @@ test('la pantalla de compra exitosa muestra el qr y permite ocultarlo y descarga
         ->assertOk()
         ->assertSee('VTA-20260910-9999')
         ->assertSee('Sucursal Miraflores')
-        ->assertSee('👁️ Ocultar QR')
+        ->assertSee('Ocultar QR')
         ->call('toggleQr')
-        ->assertSee('👁️ Ver QR')
+        ->assertSee('Ver QR')
         ->assertSee('Código QR Oculto')
         ->call('toggleQr')
-        ->assertSee('👁️ Ocultar QR');
+        ->assertSee('Ocultar QR');
 
     $this->get(route('tienda.factura.descargar', ['numeroVenta' => $venta->numero_venta]))
         ->assertOk()
@@ -295,7 +295,7 @@ test('el asistente de checkout valida paso 1 y paso 2 en español antes de avanz
         ->call('avanzarPaso1')
         ->assertHasNoErrors()
         ->assertSet('pasoActual', 2)
-        ->assertSee('Fase 2 de 3')
+        ->assertSee('Nombre o razón social')
         ->set('facturaEmail', 'invalido')
         ->call('avanzarPaso2')
         ->assertHasErrors(['facturaEmail'])
@@ -304,7 +304,7 @@ test('el asistente de checkout valida paso 1 y paso 2 en español antes de avanz
         ->call('avanzarPaso2')
         ->assertHasNoErrors()
         ->assertSet('pasoActual', 3)
-        ->assertSee('Fase 3 de 3')
+        ->assertSee('Pago con tarjeta')
         ->call('retrocederPaso')
         ->assertSet('pasoActual', 2);
 });

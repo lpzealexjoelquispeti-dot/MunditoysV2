@@ -104,7 +104,7 @@ test('no permite desactivar o eliminar catálogos con productos asociados', func
 })->with('catalogos administrativos');
 
 test('las rutas renderizan el shell y rechazan clientes sin permisos', function ($componente, $modelo, $servicio, $tabla) {
-    $this->get(route('admin.'.$tabla))->assertOk()->assertSee('Administración');
+    $this->get(route('admin.'.$tabla))->assertOk()->assertSee('Mi perfil');
     $cliente = User::factory()->create();
     $this->actingAs($cliente)->get(route('admin.'.$tabla))->assertForbidden();
     Livewire::actingAs($cliente)->test($componente)->assertForbidden();

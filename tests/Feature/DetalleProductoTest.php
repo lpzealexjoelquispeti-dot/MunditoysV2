@@ -56,9 +56,9 @@ test('el cliente puede ver la página de detalle del juguete con sus fotos y esp
         ->assertSee('TechPlay')
         ->assertSee('MT-ROBOTEXPL-123456')
         ->assertSee('Bs. 320.50')
-        ->assertSee('Modelo 3D Interactivo')
-        ->assertSee('Añadir al Carrito')
-        ->assertSee('Comprar Ahora');
+        ->assertSee('Arrastra para girar')
+        ->assertSee('Añadir al carrito')
+        ->assertSee('Comprar ahora');
 });
 
 test('la vista de detalle despliega las reseñas de los clientes con estrellas', function (): void {
@@ -82,7 +82,7 @@ test('la vista de detalle despliega las reseñas de los clientes con estrellas',
         ->assertOk()
         ->assertSee('Carlos Mamani')
         ->assertSee('Excelente material y acabados muy seguros.')
-        ->assertSee('Reseñas de este Juguete');
+        ->assertSee('Reseñas');
 });
 
 test('muestra productos relacionados en la sección podría gustarte', function (): void {

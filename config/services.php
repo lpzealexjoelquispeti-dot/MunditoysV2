@@ -35,11 +35,6 @@ return [
         ],
     ],
 
-    'tripo' => [
-        'api_key' => env('TRIPO_API_KEY'),
-        'api_url' => env('TRIPO_API_URL', 'https://api.tripo3d.ai/v2/openapi'),
-    ],
-
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
@@ -48,6 +43,12 @@ return [
 
     'delivery' => [
         'routing_url' => env('DELIVERY_ROUTING_URL', env('APP_ENV') === 'local' ? 'https://router.project-osrm.org' : null),
+    ],
+
+    // Geocodificación inversa (coordenadas → calle y zona). La política de Nominatim exige identificarse y no pasar de 1 consulta por segundo.
+    'geocodificacion' => [
+        'url' => env('GEOCODIFICACION_URL', 'https://nominatim.openstreetmap.org'),
+        'user_agent' => env('GEOCODIFICACION_USER_AGENT', 'MundiToys/1.0 (tienda de juguetes, La Paz)'),
     ],
 
 ];

@@ -5,14 +5,11 @@ namespace App\Services;
 use App\Actions\Modelado3D\DesenlazarModeloProductoAction;
 use App\Actions\Modelado3D\EliminarModelado3DAction;
 use App\Actions\Modelado3D\EnlazarModeloProductoAction;
-use App\Actions\Modelado3D\IniciarModelado3DAction;
 use App\Actions\Modelado3D\RestaurarModelado3DAction;
-use App\Actions\Modelado3D\SincronizarEstadoModelado3DAction;
 use App\Models\Modelado3D;
 use App\Models\Producto;
 use App\Repositories\Modelado3DRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
@@ -20,8 +17,6 @@ class Modelado3DService
 {
     public function __construct(
         private Modelado3DRepository $repository,
-        private IniciarModelado3DAction $iniciarAction,
-        private SincronizarEstadoModelado3DAction $sincronizarAction,
         private EnlazarModeloProductoAction $enlazarAction,
         private DesenlazarModeloProductoAction $desenlazarAction,
         private EliminarModelado3DAction $eliminarAction,
@@ -68,27 +63,13 @@ class Modelado3DService
         });
     }
 
-    /**
-     * Inicia el proceso de modelado en Tripo API a partir de 2 a 4 fotos.
-     *
-     * @param  array<int, UploadedFile|string>  $fotos
-     */
-    public function iniciarModelado(array $fotos, ?int $productoId = null): Modelado3D
-    {
-        Gate::authorize('create', Modelado3D::class);
-
-        return $this->iniciarAction->ejecutar($fotos, $productoId);
-    }
-
-    /**
-     * Sincroniza el estado de la tarea con Tripo y descarga el archivo si está completo.
-     */
-    public function sincronizar(int $id): Modelado3D
+    /** @return array<string, mixed> */
+    public function obtener(int $id): array
     {
         $modelado = $this->repository->buscar($id);
-        Gate::authorize('update', $modelado);
+        Gate::authorize('view', $modelado);
 
-        return $this->sincronizarAction->ejecutar($modelado);
+        return $modelado->toArray();
     }
 
     /**
@@ -141,34 +122,5 @@ class Modelado3DService
     public function productoTieneModeloActivo(int $productoId, ?int $excluirModeladoId = null): bool
     {
         return $this->repository->productoTieneModeloActivo($productoId, $excluirModeladoId);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function reglasFormulario(): array
-    {
-        return [
-            'productoId' => ['required', 'integer', 'exists:productos,id'],
-            'fotos' => ['required', 'array', 'min:2', 'max:4'],
-            'fotos.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function mensajes(): array
-    {
-        return [
-            'productoId.required' => 'Debes seleccionar primero un producto del catálogo para generar su modelo 3D.',
-            'productoId.exists' => 'El producto seleccionado ya no existe en el catálogo.',
-            'fotos.required' => 'Debes subir fotografías del producto desde diferentes ángulos.',
-            'fotos.min' => 'Debes subir al menos 2 imágenes para el modelado multi-ángulo.',
-            'fotos.max' => 'Tripo AI acepta un máximo de 4 imágenes por tarea.',
-            'fotos.*.image' => 'Todos los archivos deben ser imágenes válidas.',
-            'fotos.*.mimes' => 'Solo se admiten formatos JPG, PNG y WEBP.',
-            'fotos.*.max' => 'Cada imagen no debe superar los 3 MB de tamaño.',
-        ];
     }
 }

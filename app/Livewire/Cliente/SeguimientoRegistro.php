@@ -65,6 +65,7 @@ class SeguimientoRegistro extends Component
                 ->where('id', $notificacionId)
                 ->where('usuario_id', Auth::id())
                 ->update(['leido' => true]);
+            $this->dispatch('notificaciones-actualizadas');
         }
     }
 
@@ -74,6 +75,7 @@ class SeguimientoRegistro extends Component
             Notificacion::query()
                 ->where('usuario_id', Auth::id())
                 ->update(['leido' => true]);
+            $this->dispatch('notificaciones-actualizadas');
         }
     }
 

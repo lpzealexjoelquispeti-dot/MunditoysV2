@@ -4,9 +4,9 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Nunito', ui-sans-serif, system-ui, sans-serif;
     --color-brand-red: #e30613;
     --color-brand-red-dark: #b70410;
     --color-brand-blue: #005ca8;
@@ -65,4 +65,15 @@ select:focus {
 @utility toy-dot-grid {
     background-image: radial-gradient(circle, rgb(255 255 255 / 75%) 1.5px, transparent 1.5px);
     background-size: 22px 22px;
+}
+
+/* Íconos Lucide (blade-lucide-icons añade la clase "icono"): en línea con el texto y sin encogerse dentro de flex. */
+@layer components {
+    .icono {
+        display: inline-block;
+        width: 1.1em;
+        height: 1.1em;
+        flex-shrink: 0;
+        vertical-align: -0.125em;
+    }
 }

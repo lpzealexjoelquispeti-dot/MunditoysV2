@@ -5,5 +5,5 @@
 @endif
 <footer class="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
     <button type="button" wire:click="cerrarFormulario" class="min-h-11 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold">Cancelar</button>
-    <button type="submit" wire:loading.attr="disabled" wire:target="{{ $targetGuardar ?? 'guardar' }}" class="min-h-11 rounded-xl bg-brand-red px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50"><span wire:loading.remove wire:target="{{ $targetGuardar ?? 'guardar' }}">Guardar {{ $singular }}</span><span wire:loading wire:target="{{ $targetGuardar ?? 'guardar' }}">Procesando…</span></button>
+    <button type="submit" wire:loading.attr="disabled" wire:target="{{ $targetGuardar ?? 'guardar' }}" class="min-h-11 rounded-xl bg-brand-red px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"><span wire:loading.remove wire:target="{{ $targetGuardar ?? 'guardar' }}">Guardar {{ $singular }}</span><span wire:loading wire:target="{{ $targetGuardar ?? 'guardar' }}">Procesando…</span></button>
 </footer>

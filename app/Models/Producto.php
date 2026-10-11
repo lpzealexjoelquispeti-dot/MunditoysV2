@@ -76,9 +76,12 @@ class Producto extends Model
         return $this->hasMany(Resena::class);
     }
 
+    /**
+     * Modelos 3D del producto; excluye las sesiones de captura fotogramétrica, que no son modelos publicables.
+     */
     public function modelos3D()
     {
-        return $this->hasMany(Modelado3D::class);
+        return $this->hasMany(Modelado3D::class)->where('tipo_generacion', '!=', 'fotogrametria_local');
     }
 
     public function proveedores()

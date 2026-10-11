@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Ventas\GenerarFacturaPdfAction;
+use App\Http\Controllers\FotogrametriaController;
 use App\Livewire\Admin\Almacenes;
 use App\Livewire\Admin\Categorias;
 use App\Livewire\Admin\Home;
@@ -43,6 +44,11 @@ Route::get('/', function () {
         ->take(8)
         ->get();
 
+    $productoEscaneado = $productosRecientes->first(
+        fn (Producto $producto): bool => $producto->modelos3D->whereNotNull('modelo_glb_path')->isNotEmpty()
+    );
+    $modeloEscaneado = $productoEscaneado?->modelos3D->whereNotNull('modelo_glb_path')->first();
+
     $categorias = Categoria::query()
         ->where('estado', true)
         ->withCount(['productos' => fn ($q) => $q->where('estado', 'activo')])
@@ -50,7 +56,7 @@ Route::get('/', function () {
         ->take(6)
         ->get();
 
-    return view('welcome', compact('productosRecientes', 'categorias'));
+    return view('welcome', compact('productosRecientes', 'productoEscaneado', 'modeloEscaneado', 'categorias'));
 })->name('welcome');
 
 Route::middleware('guest')->group(function (): void {
@@ -77,6 +83,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'can:acceder panel']
     Route::get('/', Home::class)->name('dashboard');
     Route::get('/productos', Productos::class)->middleware('can:ver productos')->name('productos');
     Route::get('/modelos-3d', Modelados3D::class)->middleware('can:ver productos')->name('modelos-3d');
+    Route::prefix('fotogrametria/{modelado}')->name('fotogrametria.')->middleware('can:ver productos')->whereNumber('modelado')->group(function (): void {
+        Route::get('/fotos/{foto}', [FotogrametriaController::class, 'foto'])->whereNumber('foto')->name('foto');
+        Route::get('/informe', [FotogrametriaController::class, 'exportar'])->name('exportar');
+        Route::get('/dataset', [FotogrametriaController::class, 'dataset'])->name('dataset');
+    });
     Route::get('/inventario', Inventario::class)->middleware('can:gestionar inventario')->name('inventario');
     Route::get('/ventas', Ventas::class)->middleware('can:crear ventas')->name('ventas');
     Route::get('/recojo-sucursal', RecojoSucursal::class)->middleware('can:gestionar recojos')->name('recojo-sucursal');

@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { mundiToysGlbPreview } from './product-model-preview';
+import { mundiToysFotogrametriaUpload } from './fotogrametria-upload';
 import { mundiToysSucursalMap } from './sucursal-map';
 import { mundiToysDireccionMap } from './direccion-map';
 import { mundiToysLogisticaMap } from './logistica-map';
@@ -9,6 +10,7 @@ import limiteLaPaz from '../geo/la-paz.json';
 import 'leaflet/dist/leaflet.css';
 
 window.mundiToysGlbPreview = mundiToysGlbPreview;
+window.mundiToysFotogrametriaUpload = mundiToysFotogrametriaUpload;
 window.mundiToysSucursalMap = (wire, inicial) => mundiToysSucursalMap(wire, inicial, limiteLaPaz);
 window.mundiToysDireccionMap = (wire, inicial) => mundiToysDireccionMap(wire, inicial, limiteLaPaz);
 window.mundiToysLogisticaMap = mundiToysLogisticaMap;
@@ -104,6 +106,45 @@ window.confirmarCrud = async (wire, accion, id, titulo, mensaje) => {
     });
     if (respuesta.isConfirmed) {
         await wire.$call(accion, ...(id === null ? [] : [id]));
+    }
+};
+
+/**
+ * Confirma las acciones sobre una sesión de fotogrametría. "Eliminar" es definitivo (borra las fotos del disco);
+ * "archivar" la manda a la papelera conservando sus fotos.
+ */
+window.confirmarSesion3D = async (wire, accion, id, fotos = 0) => {
+    const acciones = {
+        archivarSesion: {
+            title: '¿Mover a la papelera?',
+            text: `Se conservan sus ${fotos} fotos. Podrás restaurarla cuando quieras.`,
+            icon: 'warning',
+            confirmButtonText: 'Mover a papelera',
+        },
+        restaurarSesion: {
+            title: '¿Restaurar esta sesión?',
+            text: 'Volverá a tus sesiones con todas sus fotos.',
+            icon: 'question',
+            confirmButtonText: 'Restaurar',
+        },
+        eliminarSesion: {
+            title: '¿Eliminar definitivamente?',
+            text: `Se borrarán ${fotos} fotos, sus máscaras y los modelos sin publicar para liberar espacio. No se puede deshacer.`,
+            icon: 'error',
+            confirmButtonText: 'Eliminar',
+            confirmButtonColor: '#e30613',
+        },
+    };
+    if (!Object.hasOwn(acciones, accion) || Swal.isVisible()) return;
+    const respuesta = await Swal.fire({
+        ...opcionesAlerta,
+        ...acciones[accion],
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: 'Cancelar',
+    });
+    if (respuesta.isConfirmed) {
+        await wire.$call(accion, id);
     }
 };
 

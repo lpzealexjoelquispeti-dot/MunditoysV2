@@ -15,6 +15,7 @@ class Modelado3DRepository
     public function paginar(array $filtros = [], int $porPagina = 12): LengthAwarePaginator
     {
         $query = Modelado3D::query()
+            ->where('tipo_generacion', '!=', 'fotogrametria_local')
             ->with(['producto.imagenes'])
             ->latest('id');
 

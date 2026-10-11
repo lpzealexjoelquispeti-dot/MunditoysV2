@@ -1,6 +1,8 @@
 <?php
 
+use App\Actions\Modelado3D\ValidarFotografiasJob;
 use App\Livewire\Admin\Modelados3D;
+use App\Models\FotografiaModelado;
 use App\Models\Modelado3D;
 use App\Models\Producto;
 use App\Models\User;
@@ -10,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
@@ -33,143 +36,82 @@ test('usuario no autenticado o sin permiso no puede acceder al módulo de modela
 test('administrador con permisos puede cargar la pantalla de modelados 3d', function () {
     $this->get(route('admin.modelos-3d'))
         ->assertOk()
-        ->assertSee('Generador de Modelados 3D')
-        ->assertSee('Tripo AI');
+        ->assertSee('48')
+        ->assertDontSee('Tripo AI');
 });
 
-test('valida que sea obligatorio seleccionar un juguete antes de enviar las fotos a tripo', function () {
-    $fotos = [
-        UploadedFile::fake()->image('frente.jpg'),
-        UploadedFile::fake()->image('lado.jpg'),
-    ];
-
+test('exige seleccionar un juguete antes de crear una colección local', function () {
     Livewire::test(Modelados3D::class)
-        ->set('fotos', $fotos)
-        ->call('procesarModelado')
+        ->call('crearSesion')
         ->assertHasErrors(['productoId' => 'required']);
+
+    $this->assertDatabaseCount('modelados_3d', 0);
 });
 
-test('valida que se suban entre 2 y 4 fotos para generar el modelado 3d', function () {
+test('crea una colección local asociada al juguete sin solicitar servicios externos', function () {
+    Http::preventStrayRequests();
+    Http::fake();
     $producto = Producto::factory()->create();
 
-    // Intentar con solo 1 foto
     Livewire::test(Modelados3D::class)
         ->call('seleccionarProducto', $producto->id)
-        ->set('fotos', [
-            UploadedFile::fake()->image('frente.jpg'),
-        ])
-        ->call('procesarModelado')
-        ->assertHasErrors(['fotos']);
-
-    // Intentar con 5 fotos
-    Livewire::test(Modelados3D::class)
-        ->call('seleccionarProducto', $producto->id)
-        ->set('fotos', [
-            UploadedFile::fake()->image('frente.jpg'),
-            UploadedFile::fake()->image('lado1.jpg'),
-            UploadedFile::fake()->image('lado2.jpg'),
-            UploadedFile::fake()->image('trasera.jpg'),
-            UploadedFile::fake()->image('extra.jpg'),
-        ])
-        ->call('procesarModelado')
-        ->assertHasErrors(['fotos']);
-});
-
-test('puede iniciar una tarea de generacion 3d con fotos validas y mock de tripo api', function () {
-    Storage::fake('public');
-    Config::set('services.tripo.api_key', 'test_tripo_key');
-    Config::set('services.tripo.api_url', 'https://api.tripo3d.ai/v2/openapi');
-
-    $producto = Producto::factory()->create(['nombre' => 'Dinosaurio T-Rex']);
-
-    Http::fake([
-        'https://api.tripo3d.ai/v2/openapi/upload' => Http::response([
-            'code' => 0,
-            'data' => ['image_token' => 'img_token_xyz123'],
-        ], 200),
-        'https://api.tripo3d.ai/v2/openapi/task' => Http::response([
-            'code' => 0,
-            'data' => ['task_id' => 'tripo_task_999'],
-        ], 200),
-    ]);
-
-    $fotos = [
-        UploadedFile::fake()->image('frente.png'),
-        UploadedFile::fake()->image('lateral.png'),
-        UploadedFile::fake()->image('atras.png'),
-    ];
-
-    Livewire::test(Modelados3D::class)
-        ->call('seleccionarProducto', $producto->id)
-        ->assertSet('productoId', $producto->id)
-        ->set('fotos', $fotos)
-        ->call('procesarModelado')
-        ->assertHasNoErrors()
-        ->assertDispatched('alerta-producto');
+        ->call('crearSesion')
+        ->assertHasNoErrors();
 
     $this->assertDatabaseHas('modelados_3d', [
         'producto_id' => $producto->id,
-        'task_id' => 'tripo_task_999',
-        'status' => 'pending',
-        'tipo_generacion' => 'multi_image_to_3d',
+        'tipo_generacion' => 'fotogrametria_local',
+        'status' => 'borrador',
     ]);
+    Http::assertNothingSent();
 });
 
-test('puede sincronizar el estado y descargar el modelo glb cuando tripo finaliza con exito', function () {
-    Storage::fake('public');
-    Config::set('services.tripo.api_key', 'test_tripo_key');
-    Config::set('services.tripo.api_url', 'https://api.tripo3d.ai/v2/openapi');
-
-    $producto = Producto::factory()->create();
-
-    $modelado = Modelado3D::create([
-        'producto_id' => $producto->id,
-        'task_id' => 'tripo_task_ready_1',
-        'status' => 'running',
-        'progreso' => 50,
-        'tipo_generacion' => 'tripo_ai',
-    ]);
-
-    Http::fake([
-        'https://api.tripo3d.ai/v2/openapi/task/tripo_task_ready_1' => Http::response([
-            'code' => 0,
-            'data' => [
-                'status' => 'success',
-                'progress' => 100,
-                'output' => [
-                    'model' => 'https://tripo-assets.test/models/robot.glb',
-                ],
-            ],
-        ], 200),
-        'https://tripo-assets.test/models/robot.glb' => Http::response('FAKE_GLB_BINARY_DATA', 200),
-    ]);
+test('guarda una fotografía desde la pantalla en almacenamiento privado', function () {
+    Storage::fake('local');
+    $sesion = Modelado3D::factory()->create();
 
     Livewire::test(Modelados3D::class)
-        ->call('actualizarEstado', $modelado->id)
-        ->assertDispatched('alerta-producto');
+        ->call('abrirSesion', $sesion->id)
+        ->set('foto', UploadedFile::fake()->image('frente.jpg', 800, 600))
+        ->call('guardarFoto')
+        ->assertHasNoErrors();
 
-    $modelado->refresh();
-    expect($modelado->status)->toBe('success');
-    expect($modelado->es_completado)->toBeTrue();
-    expect($modelado->progreso)->toBe(100);
-    expect($modelado->modelo_glb_path)->toBe('modelos-3d/model_tripo_task_ready_1.glb');
+    $foto = $sesion->fotografias()->sole();
+    expect($foto->nombre_original)->toBe('frente.jpg');
+    expect($foto->estado)->toBe('pendiente');
+    Storage::disk('local')->assertExists([$foto->ruta, $foto->miniatura]);
+});
 
-    Storage::disk('public')->assertExists('modelos-3d/model_tripo_task_ready_1.glb');
+test('encola el análisis local de la revisión actual al elegir una referencia', function () {
+    Queue::fake([ValidarFotografiasJob::class]);
+    Config::set('fotogrametria.python', PHP_BINARY);
+    $sesion = Modelado3D::factory()->create(['revision' => 3]);
+    $fotos = FotografiaModelado::factory()->count(3)->sequence(fn ($secuencia): array => ['ranura' => $secuencia->index + 1])
+        ->create(['modelado_3d_id' => $sesion->id]);
+
+    Livewire::test(Modelados3D::class)
+        ->call('abrirSesion', $sesion->id)
+        ->call('seleccionarReferencia', $fotos->first()->id)
+        ->call('analizarColeccion')
+        ->assertHasNoErrors();
+
+    expect($sesion->fresh()->status)->toBe('en_cola');
+    expect($sesion->fresh()->validacion_token)->not->toBeNull();
+    Queue::assertPushed(ValidarFotografiasJob::class, fn (ValidarFotografiasJob $job): bool => $job->modeladoId === $sesion->id && $job->revision === 4
+        && $job->token === $sesion->fresh()->validacion_token);
 });
 
 test('puede desenlazar un modelo 3d de un producto', function () {
     $producto = Producto::factory()->create();
 
-    $modelado = Modelado3D::create([
+    $modelado = Modelado3D::factory()->create([
         'producto_id' => $producto->id,
-        'task_id' => 'tripo_task_unlink',
+        'task_id' => 'manual-unlink',
         'status' => 'completed',
         'progreso' => 100,
         'modelo_glb_path' => 'modelos-3d/test.glb',
-        'tipo_generacion' => 'tripo_ai',
+        'tipo_generacion' => 'manual',
     ]);
-
-    $producto->update(['modelado_3d_id' => $modelado->id]);
 
     Livewire::test(Modelados3D::class)
         ->call('desenlazarProducto', $modelado->id)
@@ -179,60 +121,56 @@ test('puede desenlazar un modelo 3d de un producto', function () {
     $producto->refresh();
 
     expect($modelado->producto_id)->toBeNull();
-    expect($producto->modelado_3d_id)->toBeNull();
+    expect($producto->modelos3D()->exists())->toBeFalse();
 });
 
 test('puede eliminar un modelado 3d mediante soft delete', function () {
-    $modelado = Modelado3D::create([
-        'task_id' => 'tripo_task_to_delete',
+    $modelado = Modelado3D::factory()->create([
+        'task_id' => 'local-to-delete',
         'status' => 'failed',
         'progreso' => 0,
-        'tipo_generacion' => 'tripo_ai',
+        'tipo_generacion' => 'fotogrametria_local',
     ]);
 
     Livewire::test(Modelados3D::class)
         ->call('eliminar', $modelado->id)
         ->assertDispatched('alerta-producto');
 
-    expect(Modelado3D::find($modelado->id))->toBeNull();
-    expect(Modelado3D::withTrashed()->find($modelado->id))->not->toBeNull();
+    $this->assertSoftDeleted($modelado);
 });
 
 test('alerta y advierte cuando se selecciona un juguete que ya tiene un modelo 3d activo', function () {
     $producto = Producto::factory()->create(['nombre' => 'Auto de Carreras 3D']);
 
-    Modelado3D::create([
+    Modelado3D::factory()->create([
         'producto_id' => $producto->id,
-        'task_id' => 'tripo_task_existing_3d',
+        'task_id' => 'manual-existing-3d',
         'status' => 'completed',
         'progreso' => 100,
         'modelo_glb_path' => 'modelos-3d/auto.glb',
-        'tipo_generacion' => 'tripo_ai',
+        'tipo_generacion' => 'manual',
     ]);
 
     Livewire::test(Modelados3D::class)
         ->call('seleccionarProducto', $producto->id)
         ->assertDispatched('alerta-producto', titulo: 'Juguete con modelo 3D existente')
-        ->assertSee('Este juguete ya cuenta con un modelado 3D enlazado.');
+        ->assertSet('productoSeleccionado.tiene_3d', true);
 });
 
 test('permite filtrar por papelera y restaurar un modelo 3d eliminado', function () {
-    $modelado = Modelado3D::create([
-        'task_id' => 'tripo_task_trashed_1',
+    $modelado = Modelado3D::factory()->create([
+        'task_id' => 'manual-trashed',
         'status' => 'completed',
         'progreso' => 100,
         'modelo_glb_path' => 'modelos-3d/trashed.glb',
-        'tipo_generacion' => 'tripo_ai',
+        'tipo_generacion' => 'manual',
     ]);
 
-    // Eliminar a la papelera
     $modelado->delete();
     expect(Modelado3D::find($modelado->id))->toBeNull();
 
-    // Ver en papelera
     Livewire::test(Modelados3D::class)
         ->set('filtroEstado', 'papelera')
-        ->assertSee('En Papelera')
         ->assertSee('Restaurar')
         ->call('restaurar', $modelado->id)
         ->assertDispatched('alerta-producto', titulo: 'Modelo restaurado');

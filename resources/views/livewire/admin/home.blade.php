@@ -1,96 +1,56 @@
 @php
     $esVendedorPuro = auth()->user()?->hasRole('Vendedor') && ! auth()->user()?->hasRole('Administrador');
+
+    if (auth()->user()?->can('acceder logistica')) {
+        $modulos = [
+            ['logistica', 'package', 'Tablero de envíos', 'acceder logistica', ['vista' => 'tablero']],
+            ['logistica', 'truck', 'Historial de entregas', 'acceder logistica', ['vista' => 'completados']],
+            ['logistica', 'chart-column', 'Reportes de logística', 'acceder logistica', ['vista' => 'reportes']],
+        ];
+    } elseif ($esVendedorPuro) {
+        $modulos = [
+            ['ventas', 'receipt', 'Registrar venta', 'crear ventas', []],
+            ['productos', 'toy-brick', 'Catálogo', 'ver productos', []],
+            ['recojo-sucursal', 'shopping-bag', 'Recoger en sucursal', 'crear ventas', []],
+            ['mis-reportes', 'chart-column', 'Mis reportes', 'crear ventas', []],
+        ];
+    } else {
+        $modulos = [
+            ['ventas', 'receipt', 'Registrar venta', 'crear ventas', []],
+            ['productos', 'toy-brick', 'Productos', 'ver productos', []],
+            ['modelos-3d', 'box', 'Fotogrametría 3D', 'ver productos', []],
+            ['inventario', 'package', 'Inventario', 'gestionar inventario', []],
+            ['usuarios', 'users', 'Usuarios y accesos', 'administrar accesos', []],
+            ['reportes', 'chart-column', 'Reportes', 'administrar accesos', []],
+            ['categorias', 'puzzle', 'Categorías', 'administrar accesos', []],
+            ['marcas', 'tag', 'Marcas', 'administrar accesos', []],
+            ['sucursales', 'map-pin', 'Sucursales', 'administrar accesos', []],
+            ['almacenes', 'warehouse', 'Almacenes', 'administrar accesos', []],
+            ['proveedores', 'truck', 'Proveedores', 'administrar accesos', []],
+        ];
+    }
 @endphp
 
 <x-admin-shell>
-    <p class="text-xs font-semibold uppercase tracking-[.18em] text-brand-orange">Tu espacio de trabajo</p>
-    <h1 class="mt-2 text-3xl font-bold text-brand-ink">Bienvenido, {{ auth()->user()->name }}</h1>
-    <p class="mt-3 text-sm text-slate-600">
-        {{ $esVendedorPuro ? 'Punto de venta de mostrador y herramientas para el personal de ventas.' : 'Estos son los módulos disponibles para tu cuenta.' }}
-    </p>
+    <h1 class="text-3xl font-bold text-brand-ink">Hola, {{ auth()->user()->name }}</h1>
 
-    <div class="mt-7 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        @can('acceder logistica')
-            @foreach ([['tablero', '📦', 'Tablero de Envíos'], ['completados', '🚚', 'Historial de Entregas'], ['reportes', '📊', 'Mis Reportes de Logística']] as [$vista, $icono, $titulo])
-                <a wire:key="inicio-logistica-{{ $vista }}" href="{{ route('admin.logistica', ['vista' => $vista]) }}" wire:navigate class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                    <span class="text-2xl">{{ $icono }}</span><h2 class="mt-4 text-xl font-semibold">{{ $titulo }}</h2><span class="mt-4 inline-block text-sm font-semibold text-brand-blue">Abrir módulo →</span>
-                </a>
-            @endforeach
-        @elseif ($esVendedorPuro)
-            @can('crear ventas')
-                <a wire:key="inicio-ventas" href="{{ route('admin.ventas') }}" wire:navigate class="rounded-3xl border-2 border-brand-orange/30 bg-gradient-to-br from-orange-50/50 to-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:border-brand-orange">
-                    <div class="flex items-center justify-between">
-                        <span class="text-3xl">🧾</span>
-                        <span class="rounded-full bg-brand-orange/10 px-2.5 py-0.5 text-xs font-bold text-brand-orange">Activo</span>
-                    </div>
-                    <h2 class="mt-4 text-xl font-semibold text-slate-900">Registrar Venta (POS)</h2>
-                    <p class="mt-2 text-sm text-slate-600">Punto de venta de mostrador, búsqueda rápida de existencias en todas las sucursales, cobro multimetodo y emisión de ticket.</p>
-                    <span class="mt-4 inline-block text-sm font-semibold text-brand-orange">Abrir mostrador POS →</span>
+    <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+        @foreach ($modulos as [$clave, $icono, $titulo, $permiso, $parametros])
+            @can($permiso)
+                <a wire:key="inicio-{{ $clave }}-{{ $loop->index }}" href="{{ route('admin.'.$clave, $parametros) }}" wire:navigate class="group flex flex-col gap-4 rounded-3xl border border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-blue/40 hover:shadow-md">
+                    <span class="grid size-11 place-items-center rounded-2xl bg-blue-50 text-xl text-brand-blue transition group-hover:bg-brand-blue group-hover:text-white">
+                        <x-dynamic-component :component="'lucide-'.$icono" />
+                    </span>
+                    <span class="font-semibold text-slate-900">{{ $titulo }}</span>
                 </a>
             @endcan
+        @endforeach
 
-            @can('ver productos')
-                <a wire:key="inicio-productos" href="{{ route('admin.productos') }}" wire:navigate class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                    <span class="text-3xl">🧸</span>
-                    <h2 class="mt-4 text-xl font-semibold text-slate-900">Catálogo de Productos</h2>
-                    <p class="mt-2 text-sm text-slate-600">Consulta juguetes, especificaciones, detalles y gemelos digitales 3D interactivos.</p>
-                    <span class="mt-4 inline-block text-sm font-semibold text-brand-blue">Ver catálogo →</span>
-                </a>
-            @endcan
-
-            @can('crear ventas')
-                <a wire:key="inicio-recojo" href="{{ route('admin.recojo-sucursal') }}" wire:navigate class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                    <div class="flex items-center justify-between">
-                        <span class="text-3xl">🛍️</span>
-                        <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-bold text-brand-blue">Activo</span>
-                    </div>
-                    <h2 class="mt-4 text-xl font-semibold text-slate-900">Recoger en sucursal</h2>
-                    <p class="mt-2 text-sm text-slate-600">Gestión de entregas de compras online con escáner QR y emisión de ficha de entrega.</p>
-                    <span class="mt-4 inline-block text-sm font-semibold text-brand-blue">Gestionar entregas →</span>
-                </a>
-
-                <a wire:key="inicio-mis-reportes" href="{{ route('admin.mis-reportes') }}" wire:navigate class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                    <div class="flex items-center justify-between">
-                        <span class="text-3xl">📊</span>
-                        <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-bold text-brand-blue">Activo</span>
-                    </div>
-                    <h2 class="mt-4 text-xl font-semibold text-slate-900">Mis Reportes</h2>
-                    <p class="mt-2 text-sm text-slate-600">Rendimiento en mostrador, métodos de cobro, recojos en tienda y descargas PDF/Excel.</p>
-                    <span class="mt-4 inline-block text-sm font-semibold text-brand-blue">Consultar métricas →</span>
-                </a>
-            @endcan
-        @else
-            @foreach ([
-                ['ventas','🧾','Registrar Venta (POS)','crear ventas','Punto de venta de mostrador, cobro multimetodo y emisión de recibos.'],
-                ['productos','🧸','Productos','ver productos','Consulta el catálogo de juguetes y sus imágenes.'],
-                ['modelos-3d','🧊','Generar 3D','ver productos','Modelado 3D por fotogrametría y escaneo asistido con IA.'],
-                ['inventario','📦','Inventario','gestionar inventario','Gestiona ingresos por lotes FIFO y existencias.'],
-                ['usuarios','👥','Usuarios y accesos','administrar accesos','Invita empleados, controla roles y revisa la auditoría.'],
-                ['reportes','📊','Reportes Ejecutivos','administrar accesos','Estadísticas FIFO, inventarios, interacciones 3D y descargas PDF/Excel.'],
-                ['categorias','🧩','Categorías','administrar accesos','Organiza las categorías del catálogo.'],
-                ['marcas','🏷️','Marcas','administrar accesos','Administra las marcas de tus juguetes.'],
-                ['sucursales','📍','Sucursales','administrar accesos','Gestiona las ubicaciones de MundiToys.'],
-                ['almacenes','🏬','Almacenes','administrar accesos','Organiza los almacenes por sucursal.'],
-                ['proveedores','🚚','Proveedores','administrar accesos','Mantén los contactos de tus proveedores.'],
-            ] as [$clave,$icono,$titulo,$permiso,$descripcion])
-                @can($permiso)
-                    <a wire:key="inicio-{{ $clave }}" href="{{ route('admin.'.$clave) }}" wire:navigate class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                        <span class="text-2xl">{{ $icono }}</span><h2 class="mt-4 text-xl font-semibold">{{ $titulo }}</h2><p class="mt-2 text-sm text-slate-600">{{ $descripcion }}</p><span class="mt-4 inline-block text-sm font-semibold text-brand-blue">Abrir módulo →</span>
-                    </a>
-                @endcan
-            @endforeach
-
-            @can('administrar accesos')
-                <div class="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-50/70 p-6 opacity-80 cursor-not-allowed">
-                    <div class="flex items-center justify-between">
-                        <span class="text-2xl grayscale opacity-60">🎟️</span>
-                        <span class="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-600">Pronto</span>
-                    </div>
-                    <h2 class="mt-4 text-xl font-semibold text-slate-700">Promociones</h2>
-                    <p class="mt-2 text-sm text-slate-500">Campañas promocionales, cupones y descuentos automáticos.</p>
-                    <span class="mt-4 inline-block text-xs font-medium text-slate-400">Próximamente disponible</span>
-                </div>
-            @endcan
-        @endcan
+        @if (! $esVendedorPuro && auth()->user()?->can('administrar accesos') && ! auth()->user()?->can('acceder logistica'))
+            <div class="flex cursor-not-allowed flex-col gap-4 rounded-3xl border border-dashed border-slate-200 p-5 text-slate-400">
+                <span class="grid size-11 place-items-center rounded-2xl bg-slate-100 text-xl"><x-lucide-ticket /></span>
+                <span class="flex items-center justify-between font-semibold">Promociones <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs">Pronto</span></span>
+            </div>
+        @endif
     </div>
 </x-admin-shell>

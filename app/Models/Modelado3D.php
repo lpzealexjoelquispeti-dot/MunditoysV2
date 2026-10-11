@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Modelado3D extends Model
@@ -17,23 +19,56 @@ class Modelado3D extends Model
         'task_id',
         'status',
         'tipo_generacion',
+        'modo_captura',
         'archivo_origen',
         'prompt_text',
         'modelo_glb_path',
         'progreso',
         'error_message',
+        'referencia_foto_id',
+        'revision',
+        'revision_analizada',
+        'resultado_validacion',
+        'analizado_en',
+        'validacion_token',
+        'sesion_origen_id',
     ];
 
     protected $casts = [
         'progreso' => 'integer',
         'producto_id' => 'integer',
+        'referencia_foto_id' => 'integer',
+        'revision' => 'integer',
+        'revision_analizada' => 'integer',
+        'resultado_validacion' => 'array',
+        'analizado_en' => 'datetime',
+        'sesion_origen_id' => 'integer',
     ];
 
-    public function producto()
+    public function producto(): BelongsTo
     {
-        return $this->belongsTo(Producto::class);
-
         return $this->belongsTo(Producto::class)->withTrashed();
+    }
+
+    public function fotografias(): HasMany
+    {
+        return $this->hasMany(FotografiaModelado::class, 'modelado_3d_id')
+            ->whereNull('reemplazada_en')->orderBy('ranura');
+    }
+
+    public function validaciones(): HasMany
+    {
+        return $this->hasMany(ValidacionFotogrametria::class, 'modelado_3d_id');
+    }
+
+    public function reconstrucciones(): HasMany
+    {
+        return $this->hasMany(ReconstruccionFotogrametria::class, 'modelado_3d_id');
+    }
+
+    public function sesionOrigen(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'sesion_origen_id');
     }
 
     public function getUrlGlbAttribute(): ?string

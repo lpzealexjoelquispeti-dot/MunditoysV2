@@ -9,6 +9,8 @@ class HorarioEmpleado extends Model
 {
     use HasFactory;
 
+    protected $table = 'horarios_empleados';
+
     protected $fillable = [
         'usuario_id',
         'dia_semana',

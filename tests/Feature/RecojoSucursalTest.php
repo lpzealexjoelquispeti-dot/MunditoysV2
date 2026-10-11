@@ -140,7 +140,7 @@ test('un vendedor puede ingresar a la vista de recojo en sucursal y ver los pedi
 
     $response = $this->get(route('admin.recojo-sucursal'));
     $response->assertOk();
-    $response->assertSee('Recojo en Sucursal');
+    $response->assertSee('Recojo en sucursal');
     $response->assertSee('VTA-RECOJO-0001');
     $response->assertDontSee('VTA-RECOJO-0002');
 });

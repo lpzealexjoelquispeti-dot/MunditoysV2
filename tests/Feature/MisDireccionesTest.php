@@ -6,6 +6,7 @@ use App\Models\User;
 use Database\Seeders\PermisosSeeder;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -25,7 +26,7 @@ test('un cliente autenticado puede ver la vista de mis direcciones y el contador
     $this->actingAs($cliente)
         ->get(route('tienda.direcciones'))
         ->assertOk()
-        ->assertSee('Lugares de Entrega')
+        ->assertSee('Mis direcciones')
         ->assertSee('0 de 3 direcciones registradas');
 });
 
@@ -206,4 +207,53 @@ test('el cliente puede eliminar una direccion y liberar espacio para registrar o
         ->assertHasNoErrors();
 
     expect(Direccion::where('user_id', $cliente->id)->count())->toBe(3);
+});
+
+function respuestaNominatim(string $calle, string $barrio): array
+{
+    return ['address' => ['road' => $calle, 'neighbourhood' => $barrio, 'suburb' => 'Cotahuma', 'city' => 'La Paz']];
+}
+
+test('al marcar un punto en el mapa se autocompletan la calle y la zona', function (): void {
+    Http::fake(['nominatim.openstreetmap.org/*' => Http::response(respuestaNominatim('Calle Isla del Sol', 'Alto Pasankeri Sur'))]);
+
+    Livewire::actingAs(User::factory()->create())
+        ->test(MisDirecciones::class)
+        ->call('abrirModalCrear')
+        ->call('seleccionarUbicacion', '-16.5268900', '-68.1434600')
+        ->assertSet('latitud', '-16.5268900')
+        ->assertSet('zona', 'Alto Pasankeri Sur')
+        ->assertSet('direccionCompleta', 'Calle Isla del Sol')
+        ->assertSee('Agrega tu número de puerta');
+
+    Http::assertSent(fn ($request): bool => str_contains($request->url(), 'lat=-16.52689&lon=-68.14346')
+        && $request->header('User-Agent') === [config('services.geocodificacion.user_agent')]);
+});
+
+test('mover el pin actualiza lo autocompletado pero no pisa lo que el cliente escribio', function (): void {
+    Http::fakeSequence('nominatim.openstreetmap.org/*')
+        ->push(respuestaNominatim('Calle Isla del Sol', 'Alto Pasankeri Sur'))
+        ->push(respuestaNominatim('Avenida 6 de Agosto', 'Sopocachi'));
+
+    Livewire::actingAs(User::factory()->create())
+        ->test(MisDirecciones::class)
+        ->call('abrirModalCrear')
+        ->call('seleccionarUbicacion', '-16.5268900', '-68.1434600')
+        ->set('direccionCompleta', 'Calle Isla del Sol #45, casa verde')
+        ->call('seleccionarUbicacion', '-16.5100000', '-68.1250000')
+        ->assertSet('zona', 'Sopocachi')
+        ->assertSet('direccionCompleta', 'Calle Isla del Sol #45, casa verde');
+});
+
+test('si el servicio de mapas falla solo se guardan las coordenadas', function (): void {
+    Http::fake(['nominatim.openstreetmap.org/*' => Http::response(null, 503)]);
+
+    Livewire::actingAs(User::factory()->create())
+        ->test(MisDirecciones::class)
+        ->call('abrirModalCrear')
+        ->call('seleccionarUbicacion', '-16.5268900', '-68.1434600')
+        ->assertSet('latitud', '-16.5268900')
+        ->assertSet('zona', '')
+        ->assertSet('direccionCompleta', '')
+        ->assertHasNoErrors();
 });

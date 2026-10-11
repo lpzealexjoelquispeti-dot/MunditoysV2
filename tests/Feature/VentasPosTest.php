@@ -103,8 +103,8 @@ test('vendedor y administrador pueden acceder a ventas POS pero cliente o invita
 
     // Vendedor accede correctamente
     $this->actingAs($this->vendedor)->get(route('admin.ventas'))->assertOk()
-        ->assertSee('Punto de Venta (POS Mostrador)')
-        ->assertSee('Mostrador POS');
+        ->assertSee('Punto de venta')
+        ->assertSee('Mostrador');
 
     // Administrador accede correctamente
     $this->actingAs($this->admin)->get(route('admin.ventas'))->assertOk();
@@ -114,13 +114,13 @@ test('dashboard del vendedor muestra estilo idéntico pero solo opciones de vent
     $this->actingAs($this->vendedor);
 
     Livewire::test(Home::class)
-        ->assertSee('Registrar Venta (POS)')
-        ->assertSee('Catálogo de Productos')
+        ->assertSee('Registrar venta')
+        ->assertSee('Catálogo')
         ->assertSee('Recoger en sucursal')
-        ->assertSee('Mis Reportes')
+        ->assertSee('Mis reportes')
         ->assertDontSee('Usuarios y accesos')
         ->assertDontSee('Proveedores')
-        ->assertDontSee('Reportes Ejecutivos');
+        ->assertDontSee('Fotogrametría 3D');
 });
 
 test('busqueda pos muestra stock en sucursal actual y existencia en otras sucursales', function () {

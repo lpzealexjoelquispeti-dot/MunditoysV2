@@ -1,8 +1,8 @@
 <x-admin-modal property="modalCancelarAbierto" close="cerrarModalCancelar" title="Cancelación y Registro de Incidencia">
     <form wire:submit="guardarCancelacion" class="space-y-5">
         <div class="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-xs text-amber-900">
-            <div class="flex items-center gap-2 font-bold text-amber-800 text-sm">
-                <span>⚠️</span>
+            <div class="flex items-center gap-2 font-semibold text-amber-800 text-sm">
+                <span><x-lucide-triangle-alert /></span>
                 <span>Notificación Automática a Administradores</span>
             </div>
             <p class="mt-1 leading-relaxed">
@@ -11,7 +11,7 @@
         </div>
 
         <div>
-            <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700">
+            <label class="mb-1.5 block text-xs font-semibold text-slate-700">
                 Motivo Detallado de la Cancelación *
             </label>
             <textarea
@@ -32,15 +32,15 @@
             <button
                 type="button"
                 wire:click="cerrarModalCancelar"
-                class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-brand-ink shadow-2xs hover:bg-slate-50 transition"
+                class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-2xs hover:bg-slate-50 transition"
             >
                 Volver
             </button>
             <button
                 type="submit"
-                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-red px-5 py-2.5 text-xs font-bold text-white shadow-2xs hover:bg-brand-red-dark transition"
+                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-red px-5 py-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-brand-red-dark transition"
             >
-                <span>✕</span>
+                <span><x-lucide-x /></span>
                 <span>Registrar Cancelación y Notificar</span>
             </button>
         </div>

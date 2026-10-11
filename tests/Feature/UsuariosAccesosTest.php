@@ -234,7 +234,7 @@ test('busca filtra y muestra datos escapados sin exponer secretos', function ():
         ->assertSee('unico@example.com')->assertDontSee('<script>alert(1)</script>', false)
         ->call('verDetalle', $empleado->id);
     expect($componente->get('detalle'))->not->toHaveKey('password')->not->toHaveKey('invitacion_token_hash');
-    $componente->set('rol', 'Inventario')->assertSee('0 cuentas encontradas');
+    $componente->set('rol', 'Inventario')->assertSee('0 cuentas');
 });
 
 test('componente Livewire no permite editar ni desactivar a otro administrador desde la interfaz', function (): void {

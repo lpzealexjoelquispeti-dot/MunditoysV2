@@ -53,10 +53,10 @@ test('logistica encuentra sus reportes y las vistas de despacho en su panel', fu
     $usuario->assignRole('Logistica');
 
     $this->actingAs($usuario)->get(route('admin.dashboard'))
-        ->assertSee('Mis Reportes de Logística')
+        ->assertSee('Reportes de logística')
         ->assertSee(route('admin.logistica', ['vista' => 'reportes']))
         ->assertSee(route('admin.logistica', ['vista' => 'completados']))
-        ->assertSee('Historial de completados')
+        ->assertSee('Completados')
         ->assertDontSee(route('admin.logistica', ['vista' => 'mapa']))
         ->assertDontSee(route('admin.productos'))
         ->assertDontSee(route('admin.modelos-3d'))
@@ -104,8 +104,8 @@ test('un enlace de logistica abre la vista solicitada', function (string $vista,
         ->assertDontSee(route('admin.modelos-3d'))
         ->assertDontSee(route('admin.inventario'));
 })->with([
-    ['reportes', 'Reportes de Logística y Envíos'],
-    ['completados', 'Historial de Entregas Completadas'],
+    ['reportes', 'Reportes de logística'],
+    ['completados', 'Entregas completadas'],
     ['mapa', 'mundiToysLogisticaMap'],
-    ['invalida', 'No hay entregas registradas para esta fecha'],
+    ['invalida', 'Sin entregas'],
 ]);

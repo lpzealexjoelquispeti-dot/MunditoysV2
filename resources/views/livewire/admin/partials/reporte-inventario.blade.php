@@ -25,7 +25,7 @@
             <x-report-bars :rows="$estados" :total="array_sum($datos['estados_stock'])" />
         </x-report-panel>
         <x-report-panel title="Potencial de venta" subtitle="Estimación a precios actuales, antes de gastos y descuentos futuros">
-            <p class="text-3xl font-bold text-brand-ink tabular-nums">Bs {{ number_format($kpis['valor_venta_total'], 2) }}</p>
+            <p class="text-3xl font-semibold text-brand-ink tabular-nums">Bs {{ number_format($kpis['valor_venta_total'], 2) }}</p>
             <p class="mt-3 text-sm text-slate-600">Ganancia bruta potencial: <strong>Bs {{ number_format($kpis['margen_potencial'], 2) }}</strong> · {{ number_format($kpis['margen_porcentaje'], 1) }}% de margen.</p>
         </x-report-panel>
     </div>

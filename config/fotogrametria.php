@@ -1,0 +1,62 @@
+<?php
+
+return [
+    'objetivo_fotos' => 48,
+    'max_kilobytes' => 10240,
+    'max_pixeles' => 20000000,
+    'python' => env('FOTOGRAMETRIA_PYTHON', storage_path('app/private/fotogrametria/runtime/'.(PHP_OS_FAMILY === 'Windows' ? 'Scripts/python.exe' : 'bin/python'))),
+    'timeout' => 300,
+    'cola' => 'fotogrametria',
+    'parametros' => [
+        'analysis_size' => 1024,
+        'min_side' => 480,
+        'max_features' => 1400,
+        'threads' => 2,
+    ],
+    'modos_captura' => [
+        'plato_giratorio' => 'Giré el juguete (cámara fija)',
+        'alrededor' => 'Me moví alrededor (juguete quieto)',
+    ],
+    'vistas' => ['sin_clasificar', 'frente', 'trasera', 'izquierda', 'derecha', 'superior', 'inferior'],
+    'motores' => [
+        'colmap' => env('FOTOGRAMETRIA_COLMAP', storage_path('app/private/fotogrametria/motores/colmap/bin/'.(PHP_OS_FAMILY === 'Windows' ? 'colmap.exe' : 'colmap'))),
+        'openmvs' => env('FOTOGRAMETRIA_OPENMVS', storage_path('app/private/fotogrametria/motores/openmvs/vc17/x64/Release')),
+    ],
+    'segmentacion' => [
+        'habilitada' => env('FOTOGRAMETRIA_MASCARAS', true),
+        'modelo' => env('FOTOGRAMETRIA_MODELO_SEGMENTACION', storage_path('app/private/fotogrametria/motores/segmentacion/BiRefNet-general-epoch_244.onnx')),
+        'timeout' => 1800,
+    ],
+    'reconstruccion' => [
+        'cola' => 'reconstruccion',
+        'timeout' => 3600,
+        'directorio_modelos' => 'modelos-3d/fotogrametria',
+        'parametros' => [
+            'max_image_size' => 2000,
+            'use_gpu' => true,
+            'robust_features' => true,
+            'min_registered_ratio' => 0.8,
+            'densify_resolution_level' => 1,
+            'target_faces' => 150000,
+            'texture_size' => 4096,
+            'seam_leveling' => false,
+            'jpeg_quality' => 85,
+            'max_dimension_m' => 0.3,
+            'use_masks' => true,
+            'mask_dilation_px' => 8,
+            'min_component_ratio' => 0.02,
+            'max_camera_distance_ratio' => 3.0,
+            'refine_mesh' => true,
+            'refine_resolution_level' => 1,
+            'refine_max_face_area' => 16,
+            'close_holes' => 100,
+            'mask_texture_erosion_px' => 6,
+            'remove_soles' => true,
+        ],
+    ],
+    'protocolo' => [
+        'fotos_por_vuelta' => 16,
+        'vueltas' => ['media_altura', 'superior', 'inferior'],
+        'sectores_media_altura' => ['frente', 'derecha', 'trasera', 'izquierda'],
+    ],
+];

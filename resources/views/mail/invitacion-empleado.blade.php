@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Invitación a MundiToys</title></head>
-<body style="margin:0;background:#fff8f2;font-family:Inter,Arial,sans-serif;color:#16334a">
+<body style="margin:0;background:#fff8f2;font-family:Nunito,Arial,sans-serif;color:#16334a">
 <table role="presentation" style="width:100%;padding:24px"><tr><td align="center">
 <table role="presentation" style="width:100%;max-width:560px;background:#ffffff;border:1px solid #dbeafe;border-radius:20px">
-<tr><td style="padding:30px;background:#005ca8;border-radius:20px 20px 0 0;color:#ffffff"><strong style="font-size:26px">★ MundiToys</strong><p style="margin-bottom:0;color:#fed7aa">Construyendo sueños, juntos</p></td></tr>
+<tr><td style="padding:30px;background:#005ca8;border-radius:20px 20px 0 0;color:#ffffff"><strong style="font-size:26px">MundiToys</strong><p style="margin-bottom:0;color:#fed7aa">Construyendo sueños, juntos</p></td></tr>
 <tr><td style="padding:30px">
 <h1 style="font-size:24px">¡Hola, {{ $nombre }}!</h1>
 <p style="line-height:1.7">Te invitamos a formar parte de MundiToys con el rol <strong>{{ $rol === 'Logistica' ? 'Logística' : $rol }}</strong>.</p>

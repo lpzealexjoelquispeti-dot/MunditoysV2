@@ -29,6 +29,7 @@ class EnlazarModeloProductoAction
             Modelado3D::query()
                 ->where('producto_id', $producto->id)
                 ->where('id', '!=', $modelado->id)
+                ->where('tipo_generacion', '!=', 'fotogrametria_local')
                 ->update(['producto_id' => null]);
 
             $modelado->update(['producto_id' => $producto->id]);

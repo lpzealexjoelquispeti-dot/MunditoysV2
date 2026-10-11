@@ -1,8 +1,8 @@
 <x-admin-modal property="modalConfirmarAbierto" close="cerrarModalConfirmar" title="Confirmar Entrega en Domicilio">
     <form wire:submit="guardarConfirmacionEntrega" class="space-y-5">
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs text-emerald-900">
-            <div class="flex items-center gap-2 font-bold text-emerald-800 text-sm">
-                <span>✓</span>
+            <div class="flex items-center gap-2 font-semibold text-emerald-800 text-sm">
+                <span><x-lucide-check /></span>
                 <span>Cierre de Ciclo de Entrega</span>
             </div>
             <p class="mt-1 leading-relaxed">
@@ -11,7 +11,7 @@
         </div>
 
         <div>
-            <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700">
+            <label class="mb-1.5 block text-xs font-semibold text-slate-700">
                 Observaciones de Recepción (Opcional)
             </label>
             <textarea
@@ -28,15 +28,15 @@
             <button
                 type="button"
                 wire:click="cerrarModalConfirmar"
-                class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-brand-ink shadow-2xs hover:bg-slate-50 transition"
+                class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-brand-ink shadow-2xs hover:bg-slate-50 transition"
             >
                 Volver
             </button>
             <button
                 type="submit"
-                class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 transition"
+                class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 transition"
             >
-                <span>✓</span>
+                <span><x-lucide-check /></span>
                 <span>Confirmar Entrega Exitosa</span>
             </button>
         </div>

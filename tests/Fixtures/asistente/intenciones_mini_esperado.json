@@ -1,0 +1,42 @@
+[
+ {
+  "texto": "Hola, buenas tardes!",
+  "probabilidades": {
+   "estado_pedido": 0.03123002,
+   "recomendacion_regalo": 0.03454458,
+   "social": 0.9342254
+  }
+ },
+ {
+  "texto": "¿Dónde está mi pedido V-0012?",
+  "probabilidades": {
+   "estado_pedido": 0.9327285,
+   "recomendacion_regalo": 0.03110371,
+   "social": 0.03616778
+  }
+ },
+ {
+  "texto": "Qué le regalo a mi hijo de 7 AÑOS",
+  "probabilidades": {
+   "estado_pedido": 0.03803289,
+   "recomendacion_regalo": 0.93274636,
+   "social": 0.02922074
+  }
+ },
+ {
+  "texto": "ñandú  cómo   están",
+  "probabilidades": {
+   "estado_pedido": 0.46440365,
+   "recomendacion_regalo": 0.193159,
+   "social": 0.34243735
+  }
+ },
+ {
+  "texto": "",
+  "probabilidades": {
+   "estado_pedido": 0.2920798,
+   "recomendacion_regalo": 0.15280667,
+   "social": 0.55511353
+  }
+ }
+]

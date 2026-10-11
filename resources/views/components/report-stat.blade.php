@@ -1,7 +1,7 @@
 @props(['label', 'value', 'unit' => '', 'hint' => null, 'change' => null])
 <div class="min-w-0 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
     <p class="text-sm font-medium text-slate-600">{{ $label }}</p>
-    <p class="mt-3 break-words text-2xl font-bold tracking-tight text-brand-ink tabular-nums sm:text-3xl">
+    <p class="mt-3 break-words text-2xl font-semibold tracking-tight text-brand-ink tabular-nums sm:text-3xl">
         @if($value === null) Sin datos @else {{ $value }} @if($unit)<span class="text-base font-medium text-slate-500">{{ $unit }}</span>@endif @endif
     </p>
     @if($hint)<p class="mt-2 text-xs leading-relaxed text-slate-500">{{ $hint }}</p>@endif

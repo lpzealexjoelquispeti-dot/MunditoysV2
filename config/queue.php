@@ -31,6 +31,24 @@ return [
 
     'connections' => [
 
+        'fotogrametria' => [
+            'driver' => 'database',
+            'connection' => env('DB_QUEUE_CONNECTION'),
+            'table' => 'jobs',
+            'queue' => 'fotogrametria',
+            'retry_after' => 420,
+            'after_commit' => true,
+        ],
+
+        'fotogrametria_reconstruccion' => [
+            'driver' => 'database',
+            'connection' => env('DB_QUEUE_CONNECTION'),
+            'table' => 'jobs',
+            'queue' => 'reconstruccion',
+            'retry_after' => 3900,
+            'after_commit' => true,
+        ],
+
         'sync' => [
             'driver' => 'sync',
         ],

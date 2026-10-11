@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-[1700px]">
     <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div><p class="text-xs font-bold uppercase tracking-[.2em] text-brand-orange">Organización y abastecimiento</p><h1 class="mt-1 text-3xl font-bold text-brand-ink sm:text-4xl">{{ $titulo }}</h1><p class="mt-1 text-sm text-slate-600">Datos validados, registros recuperables e historial protegido.</p></div>
-        <button type="button" wire:click="crear" class="min-h-11 rounded-xl bg-brand-red px-5 py-3 text-sm font-bold text-white shadow-sm">＋ Registrar {{ $singular }}</button>
+        <div><h1 class="text-3xl font-semibold text-brand-ink sm:text-4xl">{{ $titulo }}</h1></div>
+        <button type="button" wire:click="crear" class="min-h-11 rounded-xl bg-brand-red px-5 py-3 text-sm font-semibold text-white shadow-sm"><x-lucide-plus /> Registrar {{ $singular }}</button>
     </header>
     <section class="mt-6 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm" aria-label="Filtros">
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -13,7 +13,7 @@
                 <x-admin-field label="Tipo" name="filtroTipo"><select wire:model.live="filtroTipo" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm"><option value="">Todos</option><option value="principal">Principal</option><option value="secundario">Secundario</option></select></x-admin-field>
             @endif
         </div>
-        <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-sm"><p><strong>{{ $registros->total() }}</strong> registros encontrados</p><button type="button" wire:click="limpiarFiltros" class="rounded-lg px-3 py-2 font-semibold text-brand-blue hover:bg-blue-50">Limpiar filtros</button></div>
+        <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-sm"><p><strong>{{ $registros->total() }}</strong> registros</p><button type="button" wire:click="limpiarFiltros" class="rounded-lg px-3 py-2 font-semibold text-brand-blue hover:bg-blue-50">Limpiar filtros</button></div>
     </section>
     <p wire:loading role="status" class="mt-3 text-sm text-brand-blue">Actualizando…</p>
     <div class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -39,7 +39,7 @@
                             @endif
                         </div></td>
                     </tr>
-                @empty<tr><td colspan="4" class="px-6 py-16 text-center"><span class="text-4xl">📋</span><h2 class="mt-4 text-lg font-bold text-brand-ink">No hay registros para mostrar</h2><p class="mt-2 text-slate-500">Ajusta los filtros o registra el primer {{ $singular }}.</p></td></tr>@endforelse
+                @empty<tr><td colspan="4" class="px-6 py-16 text-center"><span class="text-4xl"><x-lucide-clipboard-list /></span><p class="mt-3 font-semibold text-slate-600">Sin registros</p></td></tr>@endforelse
             </tbody>
         </table>
     </div>

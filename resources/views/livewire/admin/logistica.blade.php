@@ -4,30 +4,27 @@
             <!-- ENCABEZADO Y SELECTOR DE FECHA -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-brand-orange">
-                        <span>🚚</span>
+                    <div class="flex items-center gap-2 text-xs font-semibold tracking-[.18em] text-brand-orange">
+                        <span><x-lucide-truck /></span>
                         <span>Panel de Despacho y Envíos</span>
                     </div>
-                    <h1 class="mt-1 text-2xl sm:text-3xl font-bold text-brand-ink">Logística de Entregas</h1>
-                    <p class="mt-1 text-sm text-slate-600">
-                        Gestiona los envíos, sus destinos, horarios de entrega y repartidores.
-                    </p>
+                    <h1 class="mt-1 text-2xl sm:text-3xl font-semibold text-brand-ink">Logística</h1>
                 </div>
 
                 <!-- ACCIONES Y SELECTOR RÁPIDO DE FECHA -->
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="flex flex-wrap items-center gap-2 rounded-2xl border border-orange-100 bg-white p-2 shadow-2xs">
-                        <span class="text-xs font-bold text-slate-600 pl-2">Fecha:</span>
+                        <span class="text-xs font-semibold text-slate-600 pl-2">Fecha:</span>
                         <input
                             type="date"
                             wire:model.live="fechaFiltro"
-                            class="rounded-xl border border-slate-300 bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-brand-ink focus:border-brand-blue"
+                            class="rounded-xl border border-slate-300 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-brand-ink focus:border-brand-blue"
                         >
                         <button
                             type="button"
                             wire:click="irAHoy"
                             @class([
-                                'rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer',
+                                'rounded-xl px-3 py-1.5 text-xs font-semibold transition cursor-pointer',
                                 'bg-brand-blue text-white shadow-2xs' => $fechaFiltro === now()->toDateString(),
                                 'bg-slate-100 text-slate-700 hover:bg-slate-200' => $fechaFiltro !== now()->toDateString(),
                             ])
@@ -38,7 +35,7 @@
                             type="button"
                             wire:click="irAManana"
                             @class([
-                                'rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer',
+                                'rounded-xl px-3 py-1.5 text-xs font-semibold transition cursor-pointer',
                                 'bg-brand-blue text-white shadow-2xs' => $fechaFiltro === now()->addDay()->toDateString(),
                                 'bg-slate-100 text-slate-700 hover:bg-slate-200' => $fechaFiltro !== now()->addDay()->toDateString(),
                             ])
@@ -63,10 +60,10 @@
             @endphp
             <div class="flex items-center justify-between gap-3 rounded-2xl border p-4 text-xs font-medium {{ $alertaClase }}">
                 <div class="flex items-center gap-2">
-                    <span class="text-base font-bold">ℹ️</span>
+                    <span class="text-base font-semibold"><x-lucide-info /></span>
                     <span>{{ $mensajeAlerta }}</span>
                 </div>
-                <button type="button" wire:click="descartarAlerta" class="text-sm font-bold opacity-70 hover:opacity-100">✕</button>
+                <button type="button" wire:click="descartarAlerta" class="text-sm font-semibold opacity-70 hover:opacity-100"><x-lucide-x /></button>
             </div>
         @endif
 
@@ -74,41 +71,41 @@
             <!-- TARJETAS DE MÉTRICAS DEL DÍA -->
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Despachos del Día</span>
+                    <span class="text-[11px] font-semibold text-slate-500">Despachos del Día</span>
                     <div class="mt-1 flex items-baseline justify-between">
-                        <span class="text-2xl font-black text-brand-ink">{{ $conteoTotal }}</span>
+                        <span class="text-2xl font-bold text-brand-ink">{{ $conteoTotal }}</span>
                         <span class="text-xs text-slate-400">Total</span>
                     </div>
                 </div>
 
                 <div class="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 shadow-2xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Pendientes</span>
+                    <span class="text-[11px] font-semibold text-amber-800">Pendientes</span>
                     <div class="mt-1 flex items-baseline justify-between">
-                        <span class="text-2xl font-black text-amber-900">{{ $conteoPendientes }}</span>
+                        <span class="text-2xl font-bold text-amber-900">{{ $conteoPendientes }}</span>
                         <span class="text-xs text-amber-700 font-medium">Por salir</span>
                     </div>
                 </div>
 
                 <div class="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 shadow-2xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-brand-blue">En Camino</span>
+                    <span class="text-[11px] font-semibold text-brand-blue">En Camino</span>
                     <div class="mt-1 flex items-baseline justify-between">
-                        <span class="text-2xl font-black text-brand-blue">{{ $conteoEnCamino }}</span>
+                        <span class="text-2xl font-bold text-brand-blue">{{ $conteoEnCamino }}</span>
                         <span class="text-xs text-blue-700 font-medium">En ruta</span>
                     </div>
                 </div>
 
                 <div class="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 shadow-2xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Entregados</span>
+                    <span class="text-[11px] font-semibold text-emerald-800">Entregados</span>
                     <div class="mt-1 flex items-baseline justify-between">
-                        <span class="text-2xl font-black text-emerald-900">{{ $conteoEntregados }}</span>
+                        <span class="text-2xl font-bold text-emerald-900">{{ $conteoEntregados }}</span>
                         <span class="text-xs text-emerald-700 font-medium">Completados</span>
                     </div>
                 </div>
 
                 <div class="col-span-2 sm:col-span-1 rounded-2xl border border-rose-200 bg-rose-50/60 p-4 shadow-2xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-brand-red">Cancelados</span>
+                    <span class="text-[11px] font-semibold text-brand-red">Cancelados</span>
                     <div class="mt-1 flex items-baseline justify-between">
-                        <span class="text-2xl font-black text-brand-red">{{ $conteoCancelados }}</span>
+                        <span class="text-2xl font-bold text-brand-red">{{ $conteoCancelados }}</span>
                         <span class="text-xs text-rose-700 font-medium">Incidencias</span>
                     </div>
                 </div>
@@ -122,11 +119,11 @@
                 <!-- FILTROS DEL TABLERO -->
                 <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
                     <div class="relative flex-1 max-w-md">
-                        <span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-slate-400">⌕</span>
+                        <span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-slate-400"><x-lucide-search /></span>
                         <input
                             type="search"
                             wire:model.live.debounce.300ms="busqueda"
-                            placeholder="Buscar por N° Venta, cliente, teléfono, zona..."
+                            placeholder="Venta, cliente, teléfono o zona"
                             class="min-h-11 w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-9 pr-3 text-xs text-brand-ink placeholder:text-slate-400 focus:border-brand-blue"
                         >
                     </div>
@@ -150,7 +147,7 @@
                 <div class="rounded-3xl border border-orange-100 bg-white overflow-hidden shadow-xs">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs text-slate-700">
-                            <thead class="border-b border-slate-100 bg-gradient-to-r from-orange-50/50 to-blue-50/50 text-[11px] font-bold uppercase text-slate-500">
+                            <thead class="border-b border-slate-100 bg-gradient-to-r from-orange-50/50 to-blue-50/50 text-[11px] font-semibold text-slate-500">
                                 <tr>
                                     <th class="px-5 py-3.5">Pedido / Horario</th>
                                     <th class="px-5 py-3.5">Cliente & Destino</th>
@@ -166,9 +163,9 @@
                                         <!-- PEDIDO & HORARIO MATEMÁTICO -->
                                         <td class="px-5 py-4">
                                             <div class="flex flex-col">
-                                                <span class="font-bold text-sm text-brand-blue">{{ $entrega->venta?->numero_venta ?? 'S/N' }}</span>
+                                                <span class="font-semibold text-sm text-brand-blue">{{ $entrega->venta?->numero_venta ?? 'S/N' }}</span>
                                                 <div class="mt-1 flex items-center gap-1.5 text-xs text-slate-600">
-                                                    <span class="font-bold text-brand-ink">⏱ {{ $entrega->hora_inicio ? substr((string) $entrega->hora_inicio, 0, 5) : '--:--' }} a {{ $entrega->hora_fin ? substr((string) $entrega->hora_fin, 0, 5) : '--:--' }}</span>
+                                                    <span class="font-semibold text-brand-ink"><x-lucide-timer /> {{ $entrega->hora_inicio ? substr((string) $entrega->hora_inicio, 0, 5) : '--:--' }} a {{ $entrega->hora_fin ? substr((string) $entrega->hora_fin, 0, 5) : '--:--' }}</span>
                                                 </div>
                                                 <span class="text-[10px] text-slate-400">Total: Bs. {{ number_format((float) ($entrega->venta?->total ?? 0), 2) }}</span>
                                             </div>
@@ -177,18 +174,18 @@
                                         <!-- CLIENTE & DESTINO -->
                                         <td class="px-5 py-4">
                                             <div>
-                                                <p class="font-bold text-brand-ink">{{ $entrega->venta?->cliente?->name ?? 'Cliente' }}</p>
+                                                <p class="font-semibold text-brand-ink">{{ $entrega->venta?->cliente?->name ?? 'Cliente' }}</p>
                                                 <p class="text-slate-500">
                                                     @if ($entrega->venta?->cliente?->telefono)
                                                         <a href="https://wa.me/591{{ preg_replace('/\D/', '', $entrega->venta->cliente->telefono) }}" target="_blank" rel="noopener" class="text-brand-blue hover:underline">
-                                                            📞 {{ $entrega->venta->cliente->telefono }}
+                                                            <x-lucide-phone /> {{ $entrega->venta->cliente->telefono }}
                                                         </a>
                                                     @else
                                                         <span class="text-slate-400">Sin teléfono</span>
                                                     @endif
                                                 </p>
                                                 <p class="mt-1 text-[11px] text-slate-600 font-medium">
-                                                    📍 <span class="font-bold text-brand-ink">{{ $entrega->direccion?->zona ?? 'La Paz' }}:</span> {{ Str::limit($entrega->direccion?->direccion_completa ?? 'Sin dirección', 35) }}
+                                                    <x-lucide-map-pin /> <span class="font-semibold text-brand-ink">{{ $entrega->direccion?->zona ?? 'La Paz' }}:</span> {{ Str::limit($entrega->direccion?->direccion_completa ?? 'Sin dirección', 35) }}
                                                 </p>
                                             </div>
                                         </td>
@@ -200,7 +197,7 @@
                                                 $totalItems = $detalles->sum('cantidad');
                                             @endphp
                                             <div class="flex items-center gap-2">
-                                                <span class="grid size-7 place-items-center rounded-lg bg-orange-50 font-bold text-brand-orange text-xs">
+                                                <span class="grid size-7 place-items-center rounded-lg bg-orange-50 font-semibold text-brand-orange text-xs">
                                                     {{ $totalItems }}
                                                 </span>
                                                 <div class="text-xs">
@@ -218,7 +215,7 @@
                                         <td class="px-5 py-4">
                                             @if ($entrega->empleado)
                                                 <div class="flex items-center gap-2">
-                                                    <span class="grid size-6 place-items-center rounded-full bg-blue-100 text-brand-blue font-bold text-[10px]">
+                                                    <span class="grid size-6 place-items-center rounded-full bg-blue-100 text-brand-blue font-semibold text-[10px]">
                                                         {{ mb_substr($entrega->empleado->name, 0, 1) }}
                                                     </span>
                                                     <span class="font-semibold text-slate-800 text-xs">{{ $entrega->empleado->name }}</span>
@@ -246,7 +243,7 @@
                                                     default => 'Pendiente',
                                                 };
                                             @endphp
-                                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold {{ $badgeClase }}">
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $badgeClase }}">
                                                 {{ $badgeTexto }}
                                             </span>
                                         </td>
@@ -261,7 +258,7 @@
                                                     title="Ver Detalle Completo"
                                                     class="grid size-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-brand-blue hover:text-brand-blue transition cursor-pointer"
                                                 >
-                                                    👁️
+                                                    <x-lucide-eye />
                                                 </button>
 
                                                 <!-- ASIGNAR / REASIGNAR -->
@@ -272,7 +269,7 @@
                                                         title="Asignar Turno Matemático"
                                                         class="grid size-8 place-items-center rounded-lg border border-orange-200 bg-orange-50 text-brand-orange hover:bg-orange-100 transition cursor-pointer"
                                                     >
-                                                        ⏱
+                                                        <x-lucide-timer />
                                                     </button>
                                                 @endif
 
@@ -284,7 +281,7 @@
                                                         title="Poner en Camino"
                                                         class="grid size-8 place-items-center rounded-lg bg-brand-blue text-white hover:bg-blue-700 transition cursor-pointer"
                                                     >
-                                                        🚚
+                                                        <x-lucide-truck />
                                                     </button>
                                                 @endif
 
@@ -296,7 +293,7 @@
                                                         title="Marcar como Entregado"
                                                         class="grid size-8 place-items-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer"
                                                     >
-                                                        ✓
+                                                        <x-lucide-check />
                                                     </button>
                                                 @endif
 
@@ -308,7 +305,7 @@
                                                         title="Cancelar con Justificación"
                                                         class="grid size-8 place-items-center rounded-lg border border-rose-200 bg-rose-50 text-brand-red hover:bg-rose-100 transition cursor-pointer"
                                                     >
-                                                        ✕
+                                                        <x-lucide-x />
                                                     </button>
                                                 @endif
                                             </div>
@@ -318,9 +315,8 @@
                                     <tr>
                                         <td colspan="6" class="px-5 py-12 text-center text-slate-400">
                                             <div class="flex flex-col items-center justify-center">
-                                                <span class="text-4xl">🚚</span>
-                                                <p class="mt-2 text-sm font-semibold text-slate-600">No hay entregas registradas para esta fecha o criterio de búsqueda.</p>
-                                                <p class="text-xs text-slate-400">Puedes cambiar la fecha superior para consultar otros días.</p>
+                                                <span class="text-4xl"><x-lucide-truck /></span>
+                                                <p class="mt-2 text-sm font-semibold text-slate-600">Sin entregas</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -345,10 +341,10 @@
                 <div class="lg:col-span-2 rounded-3xl border border-orange-100 bg-white p-4 shadow-xs">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                         <div>
-                            <h3 class="font-bold text-brand-ink text-sm sm:text-base">Ruta de Despacho en La Paz</h3>
-                            <p class="text-xs text-slate-500">Puntos de entrega georreferenciados para la fecha {{ Carbon\Carbon::parse($fechaFiltro)->format('d/m/Y') }}</p>
+                            <h3 class="font-semibold text-brand-ink text-sm sm:text-base">Ruta del día</h3>
+                            <p class="text-xs text-slate-500">Entregas del {{ Carbon\Carbon::parse($fechaFiltro)->format('d/m/Y') }}</p>
                         </div>
-                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-brand-blue">
+                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-brand-blue">
                             {{ count($puntosMapa) }} entregas con pin
                         </span>
                     </div>
@@ -360,7 +356,7 @@
                     >
                         <div x-ref="mapaRutas" class="size-full z-10"></div>
                         <template x-if="cargando">
-                            <div class="absolute inset-0 grid place-items-center bg-white/70 z-20 text-xs font-bold text-slate-600">
+                            <div class="absolute inset-0 grid place-items-center bg-white/70 z-20 text-xs font-semibold text-slate-600">
                                 Cargando mapa de rutas...
                             </div>
                         </template>
@@ -371,7 +367,7 @@
 
                     <!-- LEYENDA DEL MAPA -->
                     <div class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-600 pt-2 border-t border-slate-100">
-                        <span class="font-bold text-slate-700">Leyenda de Pines:</span>
+                        <span class="font-semibold text-slate-700">Leyenda de Pines:</span>
                         <div class="flex items-center gap-1.5"><span class="size-3 rounded-full bg-[#f97316]"></span> Pendiente</div>
                         <div class="flex items-center gap-1.5"><span class="size-3 rounded-full bg-[#005ca8]"></span> En Camino</div>
                         <div class="flex items-center gap-1.5"><span class="size-3 rounded-full bg-[#10b981]"></span> Entregado</div>
@@ -382,7 +378,7 @@
                 <!-- LISTA LATERAL DE PARADAS -->
                 <div class="rounded-3xl border border-orange-100 bg-white p-4 shadow-xs flex flex-col h-[520px] sm:h-[620px]">
                     <div class="border-b border-slate-100 pb-3 mb-3">
-                        <h4 class="font-bold text-brand-ink text-sm">Paradas Programadas</h4>
+                        <h4 class="font-semibold text-brand-ink text-sm">Paradas Programadas</h4>
                         <p class="text-xs text-slate-400">Ordenadas por turno de salida</p>
                     </div>
 
@@ -391,19 +387,19 @@
                             <div class="rounded-xl border border-slate-200 p-3 text-xs hover:border-brand-blue transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
-                                        <span class="grid size-5 place-items-center rounded-full bg-brand-orange text-white text-[10px] font-bold">
+                                        <span class="grid size-5 place-items-center rounded-full bg-brand-orange text-white text-[10px] font-semibold">
                                             {{ $idx + 1 }}
                                         </span>
-                                        <strong class="font-bold text-brand-ink">{{ $pto['numero_venta'] }}</strong>
+                                        <strong class="font-semibold text-brand-ink">{{ $pto['numero_venta'] }}</strong>
                                     </div>
-                                    <span class="font-bold text-brand-orange">{{ $pto['hora_inicio'] }}</span>
+                                    <span class="font-semibold text-brand-orange">{{ $pto['hora_inicio'] }}</span>
                                 </div>
                                 <p class="mt-1.5 font-semibold text-slate-700">{{ $pto['cliente'] }}</p>
-                                <p class="text-[11px] text-slate-500">📍 {{ $pto['zona'] }}</p>
+                                <p class="text-[11px] text-slate-500"><x-lucide-map-pin /> {{ $pto['zona'] }}</p>
                                 <p class="text-[11px] text-slate-400 truncate">{{ $pto['direccion'] }}</p>
                                 <div class="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px]">
                                     <span class="text-slate-500">Chofer: {{ $pto['repartidor'] }}</span>
-                                    <button type="button" wire:click="abrirDetalle({{ $pto['id'] }})" class="font-bold text-brand-blue hover:underline">
+                                    <button type="button" wire:click="abrirDetalle({{ $pto['id'] }})" class="font-semibold text-brand-blue hover:underline">
                                         Ver »
                                     </button>
                                 </div>
@@ -423,14 +419,13 @@
             <div class="rounded-3xl border border-orange-100 bg-white overflow-hidden shadow-xs">
                 <div class="border-b border-slate-100 bg-slate-50 px-5 py-4 flex items-center justify-between">
                     <div>
-                        <h1 class="font-bold text-brand-ink text-xl sm:text-2xl">Historial de Entregas Completadas</h1>
-                        <p class="text-xs text-slate-500">Registro histórico de pedidos entregados exitosamente a domicilio</p>
+                        <h1 class="font-semibold text-brand-ink text-xl sm:text-2xl">Entregas completadas</h1>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs text-slate-700">
-                        <thead class="border-b border-slate-100 bg-slate-50 text-[11px] font-bold uppercase text-slate-400">
+                        <thead class="border-b border-slate-100 bg-slate-50 text-[11px] font-semibold text-slate-400">
                             <tr>
                                 <th class="px-5 py-3.5">N° Venta</th>
                                 <th class="px-5 py-3.5">Cliente</th>
@@ -444,21 +439,21 @@
                         <tbody class="divide-y divide-slate-100">
                             @forelse ($entregas as $ent)
                                 <tr class="hover:bg-slate-50 transition" wire:key="completado-{{ $ent->id }}">
-                                    <td class="px-5 py-3.5 font-bold text-brand-blue">{{ $ent->venta?->numero_venta ?? 'S/N' }}</td>
+                                    <td class="px-5 py-3.5 font-semibold text-brand-blue">{{ $ent->venta?->numero_venta ?? 'S/N' }}</td>
                                     <td class="px-5 py-3.5 font-semibold text-brand-ink">{{ $ent->venta?->cliente?->name ?? 'Cliente' }}</td>
                                     <td class="px-5 py-3.5 text-slate-600">{{ $ent->direccion?->zona ?? 'La Paz' }}</td>
                                     <td class="px-5 py-3.5 text-slate-700 font-medium">{{ $ent->empleado?->name ?? 'Repartidor' }}</td>
                                     <td class="px-5 py-3.5 text-slate-500">
                                         {{ $ent->entregado_at?->format('d/m/Y H:i') ?? ($ent->updated_at?->format('d/m/Y H:i') ?? 'Completado') }}
                                     </td>
-                                    <td class="px-5 py-3.5 text-right font-bold text-brand-ink">
+                                    <td class="px-5 py-3.5 text-right font-semibold text-brand-ink">
                                         Bs. {{ number_format((float) ($ent->venta?->total ?? 0), 2) }}
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
                                         <button
                                             type="button"
                                             wire:click="abrirDetalle({{ $ent->id }})"
-                                            class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-brand-blue hover:text-brand-blue"
+                                            class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-brand-blue hover:text-brand-blue"
                                         >
                                             Ver Ficha
                                         </button>
@@ -467,7 +462,7 @@
                             @empty
                                 <tr>
                                     <td colspan="7" class="px-5 py-12 text-center text-slate-400">
-                                        No hay despachos completados en el historial.
+                                        Sin despachos completados
                                     </td>
                                 </tr>
                             @endforelse
@@ -489,31 +484,28 @@
                 <!-- ENCABEZADO DE REPORTES Y ACCIONES DE DESCARGA -->
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs">
                     <div>
-                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-brand-orange">
-                            <span>📊</span>
+                        <div class="flex items-center gap-2 text-xs font-semibold tracking-[.18em] text-brand-orange">
+                            <span><x-lucide-chart-column /></span>
                             <span>Analítica Operativa de Despacho</span>
                         </div>
-                        <h1 class="mt-1 text-xl sm:text-2xl font-bold text-brand-ink">Reportes de Logística y Envíos</h1>
-                        <p class="mt-0.5 text-xs text-slate-500">
-                            Evaluación de cumplimiento de turnos de 90 minutos, efectividad de choferes y rutas en La Paz.
-                        </p>
+                        <h1 class="mt-1 text-xl sm:text-2xl font-semibold text-brand-ink">Reportes de logística</h1>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
                         <button
                             type="button"
                             wire:click="exportarReportePdf"
-                            class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition shadow-2xs cursor-pointer"
+                            class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition shadow-2xs cursor-pointer"
                         >
-                            <span>📄</span>
+                            <span><x-lucide-file-text /></span>
                             <span>Descargar PDF</span>
                         </button>
                         <button
                             type="button"
                             wire:click="exportarReporteExcel"
-                            class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition shadow-2xs cursor-pointer"
+                            class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition shadow-2xs cursor-pointer"
                         >
-                            <span>📗</span>
+                            <span><x-lucide-file-spreadsheet /></span>
                             <span>Descargar Excel</span>
                         </button>
                     </div>
@@ -522,7 +514,7 @@
                 <!-- BARRA DE FILTROS PARAMETRIZADOS -->
                 <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <span class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
                             <svg class="size-4 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                             Filtros de Analítica y Auditoría
                         </span>
@@ -634,38 +626,38 @@
                 <!-- 6 TARJETAS KPI DE LOGÍSTICA -->
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
                     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Despachos</span>
-                        <div class="mt-2 text-2xl font-black text-slate-900">{{ number_format($datosReporte['kpis']['total_despachos']) }}</div>
+                        <span class="text-[11px] font-semibold text-slate-400">Total Despachos</span>
+                        <div class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($datosReporte['kpis']['total_despachos']) }}</div>
                         <div class="mt-1 text-xs text-slate-500 font-medium">Envíos programados</div>
                     </div>
 
                     <div class="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5 shadow-sm">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Entregados con Éxito</span>
-                        <div class="mt-2 text-2xl font-black text-emerald-600">{{ number_format($datosReporte['kpis']['total_entregados']) }}</div>
-                        <div class="mt-1 text-xs text-emerald-700 font-bold">Efectividad: {{ $datosReporte['kpis']['tasa_efectividad'] }}%</div>
+                        <span class="text-[11px] font-semibold text-emerald-800">Entregados con Éxito</span>
+                        <div class="mt-2 text-2xl font-bold text-emerald-600">{{ number_format($datosReporte['kpis']['total_entregados']) }}</div>
+                        <div class="mt-1 text-xs text-emerald-700 font-semibold">Efectividad: {{ $datosReporte['kpis']['tasa_efectividad'] }}%</div>
                     </div>
 
                     <div class="rounded-2xl border border-sky-200 bg-sky-50/50 p-5 shadow-sm">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-sky-800">En Tránsito / En Ruta</span>
-                        <div class="mt-2 text-2xl font-black text-sky-600">{{ number_format($datosReporte['kpis']['total_en_camino']) }}</div>
+                        <span class="text-[11px] font-semibold text-sky-800">En Tránsito / En Ruta</span>
+                        <div class="mt-2 text-2xl font-bold text-sky-600">{{ number_format($datosReporte['kpis']['total_en_camino']) }}</div>
                         <div class="mt-1 text-xs text-sky-700 font-medium">Repartos activos</div>
                     </div>
 
                     <div class="rounded-2xl border border-amber-200 bg-amber-50/50 p-5 shadow-sm">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Pendientes</span>
-                        <div class="mt-2 text-2xl font-black text-amber-600">{{ number_format($datosReporte['kpis']['total_pendientes']) }}</div>
+                        <span class="text-[11px] font-semibold text-amber-800">Pendientes</span>
+                        <div class="mt-2 text-2xl font-bold text-amber-600">{{ number_format($datosReporte['kpis']['total_pendientes']) }}</div>
                         <div class="mt-1 text-xs text-amber-700 font-medium">Por asignar / despachar</div>
                     </div>
 
                     <div class="rounded-2xl border border-rose-200 bg-rose-50/50 p-5 shadow-sm">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-rose-800">Cancelaciones</span>
-                        <div class="mt-2 text-2xl font-black text-rose-600">{{ number_format($datosReporte['kpis']['total_cancelados']) }}</div>
-                        <div class="mt-1 text-xs text-rose-700 font-bold">Tasa: {{ $datosReporte['kpis']['tasa_cancelacion'] }}%</div>
+                        <span class="text-[11px] font-semibold text-rose-800">Cancelaciones</span>
+                        <div class="mt-2 text-2xl font-bold text-rose-600">{{ number_format($datosReporte['kpis']['total_cancelados']) }}</div>
+                        <div class="mt-1 text-xs text-rose-700 font-semibold">Tasa: {{ $datosReporte['kpis']['tasa_cancelacion'] }}%</div>
                     </div>
 
                     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Entregado</span>
-                        <div class="mt-2 text-2xl font-black text-brand-orange">Bs. {{ number_format($datosReporte['kpis']['monto_total_despachado'], 2) }}</div>
+                        <span class="text-[11px] font-semibold text-slate-400">Total Entregado</span>
+                        <div class="mt-2 text-2xl font-bold text-brand-orange">Bs. {{ number_format($datosReporte['kpis']['monto_total_despachado'], 2) }}</div>
                         <div class="mt-1 text-xs text-slate-500 font-medium">Valor mercadería cerrada</div>
                     </div>
                 </div>
@@ -676,8 +668,7 @@
                     <div class="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Tendencia Diaria de Despachos</h3>
-                                <p class="text-xs text-slate-500 mt-0.5">Evolución de pedidos enviados vs entregas completadas</p>
+                                <h3 class="text-sm font-semibold text-slate-800">Despachos por día</h3>
                             </div>
                             <span class="text-xs font-semibold text-slate-400">Últimos días</span>
                         </div>
@@ -694,12 +685,12 @@
                                     @endphp
                                     <div>
                                         <div class="flex items-center justify-between text-xs mb-1">
-                                            <span class="font-bold text-slate-700">{{ $dia['etiqueta'] }} <span class="text-[10px] text-slate-400 font-normal">({{ $dia['fecha'] }})</span></span>
+                                            <span class="font-semibold text-slate-700">{{ $dia['etiqueta'] }} <span class="text-[10px] text-slate-400 font-normal">({{ $dia['fecha'] }})</span></span>
                                             <div class="flex items-center gap-3">
                                                 <span class="text-slate-600 font-medium">{{ $dia['total'] }} despachos</span>
-                                                <span class="font-bold text-emerald-600">{{ $dia['entregados'] }} entregados</span>
+                                                <span class="font-semibold text-emerald-600">{{ $dia['entregados'] }} entregados</span>
                                                 @if ($dia['cancelados'] > 0)
-                                                    <span class="font-bold text-rose-500">({{ $dia['cancelados'] }} canc.)</span>
+                                                    <span class="font-semibold text-rose-500">({{ $dia['cancelados'] }} canc.)</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -720,15 +711,14 @@
                                 <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-emerald-500"></span> Entregas Exitosas</span>
                             </div>
                         @else
-                            <div class="py-12 text-center text-sm text-slate-400">No hay despachos programados en el rango seleccionado.</div>
+                            <div class="py-12 text-center text-sm text-slate-400">Sin despachos en este rango</div>
                         @endif
                     </div>
 
                     <!-- Turnos de 90 Minutos (12:00 a 18:00) -->
                     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
                         <div>
-                            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Distribución por Turnos</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Intervalos matemáticos (40m entrega + 40m retorno)</p>
+                            <h3 class="text-sm font-semibold text-slate-800">Por turno</h3>
                         </div>
 
                         @php
@@ -742,16 +732,16 @@
                                 @endphp
                                 <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-3">
                                     <div class="flex justify-between items-center text-xs mb-1">
-                                        <span class="font-bold text-slate-800">{{ $tInfo['etiqueta'] }}</span>
-                                        <span class="font-black text-brand-blue">{{ $tInfo['conteo'] }} <span class="font-normal text-slate-400">({{ $pctTurno }}%)</span></span>
+                                        <span class="font-semibold text-slate-800">{{ $tInfo['etiqueta'] }}</span>
+                                        <span class="font-bold text-brand-blue">{{ $tInfo['conteo'] }} <span class="font-normal text-slate-400">({{ $pctTurno }}%)</span></span>
                                     </div>
                                     <div class="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
                                         <div class="h-full bg-brand-blue rounded-full" style="width: {{ $pctTurno }}%"></div>
                                     </div>
                                     <div class="flex justify-between items-center text-[11px] text-slate-500 mt-1.5 pt-1 border-t border-slate-100">
-                                        <span class="text-emerald-700 font-medium">✓ {{ $tInfo['entregados'] }} exitosos</span>
+                                        <span class="text-emerald-700 font-medium"><x-lucide-check /> {{ $tInfo['entregados'] }} exitosos</span>
                                         @if ($tInfo['cancelados'] > 0)
-                                            <span class="text-rose-600 font-semibold">✕ {{ $tInfo['cancelados'] }} cancelados</span>
+                                            <span class="text-rose-600 font-semibold"><x-lucide-x /> {{ $tInfo['cancelados'] }} cancelados</span>
                                         @else
                                             <span class="text-slate-400">0 incidencias</span>
                                         @endif
@@ -768,10 +758,10 @@
                     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Despachos por Zona (La Paz)</h3>
+                                <h3 class="text-sm font-semibold text-slate-800">Por zona</h3>
                                 <p class="text-xs text-slate-500 mt-0.5">Concentración geográfica de clientes</p>
                             </div>
-                            <span class="text-xs font-bold text-brand-orange">{{ count($datosReporte['despachos_por_zona']) }} Zonas</span>
+                            <span class="text-xs font-semibold text-brand-orange">{{ count($datosReporte['despachos_por_zona']) }} Zonas</span>
                         </div>
 
                         <div class="space-y-3">
@@ -779,7 +769,7 @@
                                 <div>
                                     <div class="flex justify-between text-xs mb-1 font-semibold">
                                         <span class="text-slate-800">{{ $zd['zona'] }}</span>
-                                        <span class="text-slate-900 font-bold">{{ $zd['total'] }} despachos <span class="text-slate-400 font-normal">({{ $zd['porcentaje'] }}%)</span></span>
+                                        <span class="text-slate-900 font-semibold">{{ $zd['total'] }} despachos <span class="text-slate-400 font-normal">({{ $zd['porcentaje'] }}%)</span></span>
                                     </div>
                                     <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                                         <div class="h-full bg-brand-orange rounded-full" style="width: {{ $zd['porcentaje'] }}%"></div>
@@ -792,7 +782,7 @@
                                     </div>
                                 </div>
                             @empty
-                                <p class="text-xs text-slate-400 py-6 text-center">No hay zonas con despachos en el rango seleccionado.</p>
+                                <p class="text-xs text-slate-400 py-6 text-center">Sin zonas en este rango</p>
                             @endforelse
                         </div>
                     </div>
@@ -801,15 +791,15 @@
                     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Rendimiento por Chofer / Repartidor</h3>
+                                <h3 class="text-sm font-semibold text-slate-800">Por repartidor</h3>
                                 <p class="text-xs text-slate-500 mt-0.5">Tasa de éxito y volumen completado</p>
                             </div>
-                            <span class="text-xs font-bold text-slate-500">{{ count($datosReporte['despachos_por_chofer']) }} Repartidores</span>
+                            <span class="text-xs font-semibold text-slate-500">{{ count($datosReporte['despachos_por_chofer']) }} Repartidores</span>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-xs text-slate-700">
-                                <thead class="bg-slate-50 text-[10px] font-bold uppercase text-slate-500 border-b border-slate-200">
+                                <thead class="bg-slate-50 text-[10px] font-semibold text-slate-500 border-b border-slate-200">
                                     <tr>
                                         <th class="px-3 py-2">Chofer</th>
                                         <th class="px-3 py-2 text-center">Asignados</th>
@@ -822,24 +812,24 @@
                                     @forelse ($datosReporte['despachos_por_chofer'] as $chf)
                                         <tr>
                                             <td class="px-3 py-2.5">
-                                                <div class="font-bold text-slate-900">{{ $chf['nombre'] }}</div>
+                                                <div class="font-semibold text-slate-900">{{ $chf['nombre'] }}</div>
                                             </td>
-                                            <td class="px-3 py-2.5 text-center font-bold text-slate-700">{{ $chf['total'] }}</td>
-                                            <td class="px-3 py-2.5 text-center font-bold text-emerald-600">{{ $chf['entregados'] }}</td>
-                                            <td class="px-3 py-2.5 text-center font-bold {{ $chf['cancelados'] > 0 ? 'text-rose-600' : 'text-slate-400' }}">
+                                            <td class="px-3 py-2.5 text-center font-semibold text-slate-700">{{ $chf['total'] }}</td>
+                                            <td class="px-3 py-2.5 text-center font-semibold text-emerald-600">{{ $chf['entregados'] }}</td>
+                                            <td class="px-3 py-2.5 text-center font-semibold {{ $chf['cancelados'] > 0 ? 'text-rose-600' : 'text-slate-400' }}">
                                                 {{ $chf['cancelados'] }}
                                             </td>
-                                            <td class="px-3 py-2.5 text-right font-black">
+                                            <td class="px-3 py-2.5 text-right font-bold">
                                                 @if ($chf['tasa_exito'] >= 85)
-                                                    <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800">
+                                                    <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
                                                         {{ $chf['tasa_exito'] }}%
                                                     </span>
                                                 @elseif ($chf['tasa_exito'] >= 70)
-                                                    <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">
+                                                    <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
                                                         {{ $chf['tasa_exito'] }}%
                                                     </span>
                                                 @else
-                                                    <span class="inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold text-rose-800">
+                                                    <span class="inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-800">
                                                         {{ $chf['tasa_exito'] }}%
                                                     </span>
                                                 @endif
@@ -859,17 +849,16 @@
                 <!-- MOTIVOS DE CANCELACIÓN -->
                 @if (count($datosReporte['motivos_cancelacion']) > 0)
                     <div class="rounded-2xl border border-rose-200 bg-rose-50/30 p-6 shadow-sm">
-                        <h3 class="text-sm font-bold text-rose-900 uppercase tracking-wide mb-2 flex items-center gap-2">
-                            <span>⚠️</span>
+                        <h3 class="text-sm font-semibold text-rose-900 mb-2 flex items-center gap-2">
+                            <span><x-lucide-triangle-alert /></span>
                             <span>Análisis de Incidencias y Cancelaciones</span>
                         </h3>
-                        <p class="text-xs text-rose-700 mb-4">Motivos reportados por los choferes durante las rutas de entrega:</p>
                         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                             @foreach ($datosReporte['motivos_cancelacion'] as $motivo => $conteo)
                                 <div class="rounded-xl border border-rose-200 bg-white p-3 shadow-2xs">
-                                    <div class="text-xs font-bold text-slate-800">{{ $motivo }}</div>
+                                    <div class="text-xs font-semibold text-slate-800">{{ $motivo }}</div>
                                     <div class="mt-1 flex items-center justify-between text-xs">
-                                        <span class="text-rose-600 font-black text-base">{{ $conteo }} incidentes</span>
+                                        <span class="text-rose-600 font-bold text-base">{{ $conteo }} incidentes</span>
                                         <span class="text-[10px] text-slate-400 font-medium">{{ round(($conteo / max($datosReporte['kpis']['total_cancelados'], 1)) * 100, 1) }}% de cancelaciones</span>
                                     </div>
                                 </div>
@@ -882,15 +871,14 @@
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Registro de Despachos y Envíos</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Últimos registros filtrados en el periodo seleccionado</p>
+                            <h3 class="text-sm font-semibold text-slate-800">Despachos</h3>
                         </div>
                         <span class="text-xs font-semibold text-slate-400">Mostrando {{ count($datosReporte['entregas_registros']) }} registros</span>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs text-slate-700">
-                            <thead class="bg-slate-50 text-[10px] font-bold uppercase text-slate-500 border-b border-slate-200">
+                            <thead class="bg-slate-50 text-[10px] font-semibold text-slate-500 border-b border-slate-200">
                                 <tr>
                                     <th class="px-3 py-2.5">Código / Fecha</th>
                                     <th class="px-3 py-2.5">Cliente</th>
@@ -905,29 +893,29 @@
                                 @forelse ($datosReporte['entregas_registros'] as $entrega)
                                     <tr>
                                         <td class="px-3 py-2.5">
-                                            <div class="font-bold text-brand-ink">{{ $entrega->venta?->numero_venta ?? ('ENT-#'.$entrega->id) }}</div>
+                                            <div class="font-semibold text-brand-ink">{{ $entrega->venta?->numero_venta ?? ('ENT-#'.$entrega->id) }}</div>
                                             <div class="text-[10px] text-slate-400">{{ $entrega->fecha_programada ? \Carbon\Carbon::parse($entrega->fecha_programada)->format('d/m/Y') : '-' }}</div>
                                         </td>
                                         <td class="px-3 py-2.5">
-                                            <div class="font-bold text-slate-900">{{ $entrega->venta?->cliente?->name ?? 'Cliente Web' }}</div>
+                                            <div class="font-semibold text-slate-900">{{ $entrega->venta?->cliente?->name ?? 'Cliente Web' }}</div>
                                             <div class="text-[10px] text-slate-400">{{ $entrega->venta?->cliente?->telefono ?? 'Sin teléfono' }}</div>
                                         </td>
                                         <td class="px-3 py-2.5">
                                             <span class="font-medium text-slate-700">{{ $entrega->empleado?->name ?? 'Sin asignar' }}</span>
                                         </td>
                                         <td class="px-3 py-2.5">
-                                            <div class="font-bold text-slate-800">{{ $entrega->direccion?->zona ?? ($entrega->sucursal?->zona ?? 'La Paz') }}</div>
+                                            <div class="font-semibold text-slate-800">{{ $entrega->direccion?->zona ?? ($entrega->sucursal?->zona ?? 'La Paz') }}</div>
                                             <div class="text-[10px] text-slate-400 truncate max-w-xs">{{ $entrega->direccion?->direccion_completa ?? ($entrega->sucursal?->direccion ?? '-') }}</div>
                                         </td>
                                         <td class="px-3 py-2.5 text-center">
-                                            <span class="inline-flex items-center rounded-lg bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-700">
+                                            <span class="inline-flex items-center rounded-lg bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-700">
                                                 {{ $entrega->hora_inicio ? substr((string) $entrega->hora_inicio, 0, 5) : '-' }}
                                                 @if ($entrega->hora_fin)
                                                     - {{ substr((string) $entrega->hora_fin, 0, 5) }}
                                                 @endif
                                             </span>
                                         </td>
-                                        <td class="px-3 py-2.5 text-right font-black text-slate-900">
+                                        <td class="px-3 py-2.5 text-right font-bold text-slate-900">
                                             Bs. {{ number_format((float) ($entrega->venta?->total ?? 0), 2) }}
                                         </td>
                                         <td class="px-3 py-2.5 text-center">
@@ -939,15 +927,18 @@
                                                     'cancelado' => 'bg-rose-100 text-rose-800 border-rose-200',
                                                     default => 'bg-slate-100 text-slate-800 border-slate-200',
                                                 };
-                                                $badgeLabel = match ($entrega->estado) {
-                                                    'entregado' => '✓ Entregado',
-                                                    'en_camino' => '🚚 En Camino',
-                                                    'pendiente' => '⏳ Pendiente',
-                                                    'cancelado' => '✕ Cancelado',
-                                                    default => ucfirst((string) $entrega->estado),
+                                                [$badgeIcono, $badgeLabel] = match ($entrega->estado) {
+                                                    'entregado' => ['check', 'Entregado'],
+                                                    'en_camino' => ['truck', 'En Camino'],
+                                                    'pendiente' => ['hourglass', 'Pendiente'],
+                                                    'cancelado' => ['x', 'Cancelado'],
+                                                    default => [null, ucfirst((string) $entrega->estado)],
                                                 };
                                             @endphp
-                                            <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold {{ $badgeClass }}">
+                                            <span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold {{ $badgeClass }}">
+                                                @if ($badgeIcono)
+                                                    <x-dynamic-component :component="'lucide-'.$badgeIcono" />
+                                                @endif
                                                 {{ $badgeLabel }}
                                             </span>
                                             @if ($entrega->estado === 'cancelado' && $entrega->motivo_cancelacion)
@@ -959,7 +950,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-3 py-8 text-center text-slate-400">No se encontraron despachos registrados con los filtros aplicados.</td>
+                                        <td colspan="7" class="px-3 py-8 text-center text-slate-400">Sin despachos</td>
                                     </tr>
                                 @endforelse
                             </tbody>

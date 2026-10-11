@@ -23,25 +23,25 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="grid aspect-square place-items-center rounded-2xl bg-white text-7xl">🧸</div>
+                            <div class="grid aspect-square place-items-center rounded-2xl bg-white text-7xl"><x-lucide-toy-brick class="text-slate-300" /></div>
                         @endif
                     </div>
 
                     <div class="max-h-[85vh] overflow-y-auto p-6 sm:p-8">
-                        <p class="text-xs font-bold uppercase tracking-[.18em] text-brand-orange">{{ $productoDetalle['categoria'] }} · {{ $productoDetalle['marca'] }}</p>
-                        <h2 id="detalle-producto-titulo" class="mt-2 pr-10 text-3xl font-bold text-brand-ink">{{ $productoDetalle['nombre'] }}</h2>
+                        <p class="text-sm text-slate-500">{{ $productoDetalle['categoria'] }} · {{ $productoDetalle['marca'] }}</p>
+                        <h2 id="detalle-producto-titulo" class="mt-2 pr-10 text-3xl font-semibold text-brand-ink">{{ $productoDetalle['nombre'] }}</h2>
                         <p class="mt-5 leading-7 text-slate-600">{{ $productoDetalle['descripcion'] }}</p>
 
                         <dl class="mt-6 grid grid-cols-2 gap-3 text-sm">
-                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Edad recomendada</dt><dd class="mt-1 font-bold text-brand-ink">{{ $productoDetalle['edad_recomendada'] }} años</dd></div>
-                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Dimensiones</dt><dd class="mt-1 font-bold text-brand-ink">{{ $productoDetalle['dimensiones'] }}</dd></div>
-                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Código interno</dt><dd class="mt-1 break-all font-bold text-brand-ink">{{ $productoDetalle['codigo_producto'] }}</dd></div>
-                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Identificador QR</dt><dd class="mt-1 break-all font-bold text-brand-ink">{{ $productoDetalle['codigo_qr'] }}</dd></div>
+                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Edad recomendada</dt><dd class="mt-1 font-semibold text-brand-ink">{{ $productoDetalle['edad_recomendada'] }} años</dd></div>
+                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Dimensiones</dt><dd class="mt-1 font-semibold text-brand-ink">{{ $productoDetalle['dimensiones'] }}</dd></div>
+                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Código interno</dt><dd class="mt-1 break-all font-semibold text-brand-ink">{{ $productoDetalle['codigo_producto'] }}</dd></div>
+                            <div class="rounded-xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Identificador QR</dt><dd class="mt-1 break-all font-semibold text-brand-ink">{{ $productoDetalle['codigo_qr'] }}</dd></div>
                         </dl>
 
                         @if ($productoDetalle['modelo_glb_url'])
                             <div class="mt-6">
-                                <h3 class="mb-2 text-lg font-bold text-brand-ink">Vista 3D</h3>
+                                <h3 class="mb-2 text-lg font-semibold text-brand-ink">Vista 3D</h3>
                                 <model-viewer src="{{ $productoDetalle['modelo_glb_url'] }}" alt="Modelo 3D de {{ $productoDetalle['nombre'] }}" camera-controls auto-rotate shadow-intensity="1" class="h-72 w-full rounded-2xl bg-slate-100"></model-viewer>
                                 <p class="mt-2 text-center text-xs text-slate-500">Arrastra para rotar y usa la rueda para acercar.</p>
                             </div>

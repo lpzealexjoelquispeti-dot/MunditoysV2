@@ -197,7 +197,7 @@
             <td class="kpi-card" style="border-top-color: #8b5cf6; width: 16%;">
                 <div class="kpi-title">Visor 3D Interactivo</div>
                 <div class="kpi-number" style="color: #8b5cf6;">{{ number_format($kpis['total_interacciones_3d']) }}</div>
-                <div class="kpi-badge" style="color: #8b5cf6;">Modelos Tripo Explorados</div>
+                <div class="kpi-badge" style="color: #8b5cf6;">Modelos 3D explorados</div>
             </td>
             <td class="kpi-card" style="border-top-color: #16a34a; width: 17%;">
                 <div class="kpi-title">Agregados al Carrito</div>
@@ -311,4 +311,3 @@
 
 </body>
 </html>
-

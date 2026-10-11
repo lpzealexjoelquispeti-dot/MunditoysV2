@@ -12,6 +12,7 @@ use App\Models\Proveedor;
 use App\Models\Sucursal;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class MarvelCatalogSeeder extends Seeder
@@ -84,8 +85,8 @@ class MarvelCatalogSeeder extends Seeder
             [
                 'codigo_producto' => 'MT-COLOSSUS-001',
                 'codigo_qr' => 'MTQR-COLOSSUS-001',
-                'nombre' => 'Colossus Marvel',
-                'descripcion' => 'Figura de acción coleccionable de Piotr Rasputin (Colossus) de los X-Men con acabado cromado orgánico, manos intercambiables y 25 puntos de articulación.',
+                'nombre' => 'Colossus Marvel Legends',
+                'descripcion' => 'Figura de acción articulada de Colossus, personaje de los X-Men, de la línea Marvel Legends de Hasbro. Coleccionable con apariencia metálica y traje rojo con amarillo.',
                 'precio_compra_referencia' => 265.00,
                 'precio_venta' => 380.00,
                 'edad_recomendada' => '9-12',
@@ -95,8 +96,8 @@ class MarvelCatalogSeeder extends Seeder
             [
                 'codigo_producto' => 'MT-APOCALYPSE-002',
                 'codigo_qr' => 'MTQR-APOCALYPSE-002',
-                'nombre' => 'Apocalipse Marvel',
-                'descripcion' => 'Imponente figura de Apocalipsis (En Sabah Nur) con armadura celestial bio-mecánica, cables cibernéticos flexibles y soporte de combate de lujo.',
+                'nombre' => 'Apocalypse Marvel Legends',
+                'descripcion' => 'Figura de acción articulada de Apocalypse (Apocalipsis), personaje de los X-Men, de la línea Marvel Legends de Hasbro. Coleccionable con armadura azul y morada.',
                 'precio_compra_referencia' => 320.00,
                 'precio_venta' => 460.00,
                 'edad_recomendada' => '13+',
@@ -106,8 +107,8 @@ class MarvelCatalogSeeder extends Seeder
             [
                 'codigo_producto' => 'MT-JUGGERNAUT-003',
                 'codigo_qr' => 'MTQR-JUGGERNAUT-003',
-                'nombre' => 'Juggernaut Marvel',
-                'descripcion' => 'La fuerza imparable de Juggernaut (Cain Marko) con casco blindado esférico, hombreras pesadas esculpidas y puños de acero.',
+                'nombre' => 'Juggernaut Marvel Legends',
+                'descripcion' => 'Figura de acción articulada de Juggernaut, personaje de los X-Men, de la línea Marvel Legends de Hasbro. Coleccionable con casco y traje de tonos rojos y marrones.',
                 'precio_compra_referencia' => 305.00,
                 'precio_venta' => 440.00,
                 'edad_recomendada' => '9-12',
@@ -117,8 +118,8 @@ class MarvelCatalogSeeder extends Seeder
             [
                 'codigo_producto' => 'MT-THANOS-004',
                 'codigo_qr' => 'MTQR-THANOS-004',
-                'nombre' => 'Thanos Marvel',
-                'descripcion' => 'El Titán Loco con Guantelete del Infinito dorado, gemas translúcidas talladas con detalle y espada doble de batalla.',
+                'nombre' => 'Thanos Marvel Legends',
+                'descripcion' => 'Figura de acción articulada de Thanos de la línea Marvel Legends de Hasbro, inspirada en The Infinity Gauntlet. Coleccionable con armadura azul y dorada y Guantelete del Infinito.',
                 'precio_compra_referencia' => 345.00,
                 'precio_venta' => 495.00,
                 'edad_recomendada' => '13+',
@@ -128,8 +129,8 @@ class MarvelCatalogSeeder extends Seeder
             [
                 'codigo_producto' => 'MT-IRONMAN-005',
                 'codigo_qr' => 'MTQR-IRONMAN-005',
-                'nombre' => 'Iron Man Marvel',
-                'descripcion' => 'Figura de Tony Stark con su armadura Mark LXXXV en acabados cromados rojo y oro, nanoguantelete desmontable y efectos repulsores.',
+                'nombre' => 'Iron Man Marvel Legends',
+                'descripcion' => 'Figura de acción articulada de Iron Man de la línea Marvel Legends de Hasbro. Coleccionable de Tony Stark con armadura roja y dorada.',
                 'precio_compra_referencia' => 245.00,
                 'precio_venta' => 350.00,
                 'edad_recomendada' => '6-8',
@@ -138,13 +139,13 @@ class MarvelCatalogSeeder extends Seeder
             ],
         ];
 
-        // Sincronizar también Capitán América para mantener su precio entre 300 y 500
+        // Identificar también el Capitán América existente como parte de la línea Marvel Legends.
         $capitan = Producto::query()->where('nombre', 'like', '%Capitan America%')->first();
         if ($capitan) {
             $capitan->update([
-                'precio_compra_referencia' => 290.00,
-                'precio_venta' => 420.00,
-                'descripcion' => 'Figura de Steve Rogers Capitán América con escudo de vibranio desmontable, correas tácticas y articulaciones de combate.',
+                'nombre' => 'Capitán América Marvel Legends',
+                'marca_id' => $marca->id,
+                'descripcion' => 'Figura de acción articulada de Capitán América de la línea Marvel Legends de Hasbro, con su característico escudo.',
             ]);
         }
 
@@ -158,6 +159,10 @@ class MarvelCatalogSeeder extends Seeder
                     'estado' => 'activo',
                 ])
             );
+
+            $producto->update([
+                'nombre' => $datosProd['nombre'], 'descripcion' => $datosProd['descripcion'], 'marca_id' => $marca->id,
+            ]);
 
             // Asegurar registro de inventario en el almacén de la sucursal
             $inventario = Inventario::query()->firstOrCreate(
@@ -220,5 +225,7 @@ class MarvelCatalogSeeder extends Seeder
                 ]
             );
         }
+        $this->call(ImagenesCatalogoSeeder::class);
+        Cache::forget('asistente:vectores-sincronizados');
     }
 }

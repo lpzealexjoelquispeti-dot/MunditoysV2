@@ -36,4 +36,14 @@ class Modelado3DPolicy
     {
         return $user->can('eliminar productos') || $user->hasRole('Administrador');
     }
+
+    public function restore(User $user, Modelado3D $modelado): bool
+    {
+        return $this->delete($user, $modelado);
+    }
+
+    public function forceDelete(User $user, Modelado3D $modelado): bool
+    {
+        return $this->delete($user, $modelado);
+    }
 }

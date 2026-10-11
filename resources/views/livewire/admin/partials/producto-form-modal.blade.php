@@ -5,15 +5,15 @@
             <header class="border-b border-slate-100 bg-gradient-to-r from-orange-50 to-blue-50 px-5 py-4 sm:px-7">
                 <div class="flex items-start justify-between gap-4">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-[.18em] text-brand-orange">Catálogo MundiToys</p>
-                        <h2 id="producto-modal-titulo" class="mt-1 text-2xl font-bold text-brand-ink">{{ $productoId ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+                        <h2 id="producto-modal-titulo" class="mt-1 text-2xl font-semibold text-brand-ink">{{ $productoId ? 'Editar producto' : 'Nuevo producto' }}</h2>
                     </div>
                     <button type="button" wire:click="cerrarModal" class="grid size-10 shrink-0 place-items-center rounded-full bg-white text-xl text-slate-500 shadow-sm hover:text-brand-red" aria-label="Cerrar">×</button>
                 </div>
 
                 <ol class="mt-4 grid grid-cols-2 gap-2" aria-label="Progreso del formulario">
-                    <li @class(['flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold', 'bg-brand-blue text-white' => $paso === 1, 'bg-white/80 text-brand-blue' => $paso !== 1])><span class="grid size-6 place-items-center rounded-full bg-white/20">1</span> Datos del juguete</li>
-                    <li @class(['flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold', 'bg-brand-blue text-white' => $paso === 2, 'bg-white/80 text-slate-500' => $paso !== 2])><span class="grid size-6 place-items-center rounded-full bg-black/5">2</span> Imágenes y modelo 3D</li>
+                    <li @class(['flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold', 'bg-brand-blue text-white' => $paso === 1, 'bg-white/80 text-brand-blue' => $paso !== 1])><span class="grid size-6 place-items-center rounded-full bg-white/20">1</span> Datos del juguete</li>
+                    <li @class(['flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold', 'bg-brand-blue text-white' => $paso === 2, 'bg-white/80 text-slate-500' => $paso !== 2])><span class="grid size-6 place-items-center rounded-full bg-black/5">2</span> Imágenes y modelo 3D</li>
                 </ol>
             </header>
 
@@ -77,13 +77,13 @@
                     <div class="grid gap-6 lg:grid-cols-[1.3fr_.7fr]">
                         <section>
                             <div class="flex items-end justify-between gap-3">
-                                <div><h3 class="text-lg font-bold text-brand-ink">Galería del juguete *</h3><p class="text-sm text-slate-500">Carga entre 3 y 4 imágenes JPG, PNG o WEBP; máximo 3 MB cada una.</p></div>
-                                <span class="rounded-full bg-brand-orange-soft px-3 py-1 text-xs font-bold text-brand-orange">{{ count($imagenesExistentes) + count($imagenes) }}/4</span>
+                                <div><h3 class="text-lg font-semibold text-brand-ink">Galería del juguete *</h3><p class="text-sm text-slate-500">Carga entre 3 y 4 imágenes JPG, PNG o WEBP; máximo 3 MB cada una.</p></div>
+                                <span class="rounded-full bg-brand-orange-soft px-3 py-1 text-xs font-semibold text-brand-orange">{{ count($imagenesExistentes) + count($imagenes) }}/4</span>
                             </div>
 
                             <label class="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/50 px-5 py-7 text-center hover:border-brand-blue hover:bg-blue-50">
                                 <input wire:model="imagenes" type="file" accept="image/jpeg,image/png,image/webp" multiple class="sr-only">
-                                <span class="text-4xl">📷</span><span class="mt-2 text-sm font-bold text-brand-blue">Seleccionar imágenes</span><span class="mt-1 text-xs text-slate-500">Puedes seleccionar varias a la vez</span>
+                                <span class="text-4xl"><x-lucide-camera /></span><span class="mt-2 text-sm font-semibold text-brand-blue">Seleccionar imágenes</span><span class="mt-1 text-xs text-slate-500">Puedes seleccionar varias a la vez</span>
                             </label>
                             <div wire:loading wire:target="imagenes" class="mt-2 text-xs font-semibold text-brand-blue">Validando y preparando imágenes…</div>
                             @error('imagenes') <span class="mt-2 block text-sm font-medium text-brand-red">{{ $message }}</span> @enderror
@@ -93,7 +93,7 @@
                                 @foreach ($imagenesExistentes as $imagenExistente)
                                     <figure class="relative overflow-hidden rounded-xl border border-slate-200" wire:key="existente-{{ $imagenExistente['id'] }}">
                                         <img src="{{ $imagenExistente['url'] }}" alt="Imagen guardada" class="aspect-square w-full object-cover">
-                                        <button type="button" wire:click="quitarImagenExistente({{ $imagenExistente['id'] }})" class="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-brand-red text-sm font-bold text-white" aria-label="Quitar imagen">×</button>
+                                        <button type="button" wire:click="quitarImagenExistente({{ $imagenExistente['id'] }})" class="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-brand-red text-sm font-semibold text-white" aria-label="Quitar imagen">×</button>
                                     </figure>
                                 @endforeach
                                 @foreach ($imagenes as $indice => $imagenNueva)
@@ -103,18 +103,18 @@
                                         @else
                                             <p class="grid aspect-square place-items-center p-2 text-center text-xs text-brand-red">Imagen no válida; quítala y selecciona otra.</p>
                                         @endif
-                                        <button type="button" wire:click="quitarImagenNueva({{ $indice }})" class="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-brand-red text-sm font-bold text-white" aria-label="Quitar imagen">×</button>
+                                        <button type="button" wire:click="quitarImagenNueva({{ $indice }})" class="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-brand-red text-sm font-semibold text-white" aria-label="Quitar imagen">×</button>
                                     </figure>
                                 @endforeach
                             </div>
                         </section>
 
                         <section>
-                            <h3 class="text-lg font-bold text-brand-ink">Modelo 3D opcional</h3>
+                            <h3 class="text-lg font-semibold text-brand-ink">Modelo 3D opcional</h3>
                             <p class="text-sm text-slate-500">Solo formato GLB, máximo 50 MB.</p>
                             <label class="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-orange-200 bg-orange-50/60 px-5 py-7 text-center hover:border-brand-orange">
                                 <input wire:model="modeloGlb" x-ref="glbInput" x-on:change="selectFile($event.target.files[0])" x-on:livewire-upload-start="uploading = true" x-on:livewire-upload-finish="uploading = false" x-on:livewire-upload-error="uploadFailed()" x-on:livewire-upload-cancel="uploading = false" :disabled="uploading" type="file" accept=".glb" class="sr-only">
-                                <span class="text-4xl">🧊</span><span class="mt-2 text-sm font-bold text-brand-orange">Seleccionar archivo .glb</span>
+                                <span class="text-4xl"><x-lucide-box /></span><span class="mt-2 text-sm font-semibold text-brand-orange">Seleccionar archivo .glb</span>
                             </label>
                             <div wire:loading wire:target="modeloGlb" class="mt-2 text-xs font-semibold text-brand-orange">Preparando modelo 3D…</div>
                             @error('modeloGlb') <span class="mt-2 block text-sm font-medium text-brand-red">{{ $message }}</span> @enderror
@@ -126,7 +126,7 @@
                                 </template>
                                 <p x-text="fileName" class="break-all px-3 py-2 text-xs text-slate-500"></p>
                             </div>
-                            <button type="button" x-show="previewUrl || previewError || $wire.modeloGlb" :disabled="uploading" x-on:click="resetPreview(); $wire.quitarModeloGlb()" class="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold text-brand-red disabled:opacity-50">Quitar modelo seleccionado</button>
+                            <button type="button" x-show="previewUrl || previewError || $wire.modeloGlb" :disabled="uploading" x-on:click="resetPreview(); $wire.quitarModeloGlb()" class="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-brand-red disabled:opacity-50">Quitar modelo seleccionado</button>
                             @if ($modeloActual && !$modeloGlb)
                                 <div class="mt-4 overflow-hidden rounded-2xl border border-orange-100 bg-slate-50">
                                     <model-viewer src="{{ asset('storage/'.$modeloActual) }}" camera-controls auto-rotate shadow-intensity="1" class="h-56 w-full"></model-viewer>
@@ -138,12 +138,12 @@
                 @endif
 
                 <footer class="sticky -bottom-7 mt-7 flex flex-col-reverse gap-3 border-t border-slate-100 bg-white py-4 sm:flex-row sm:justify-end">
-                    <button type="button" wire:click="cerrarModal" class="min-h-11 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Cancelar</button>
+                    <button type="button" wire:click="cerrarModal" class="min-h-11 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancelar</button>
                     @if ($paso === 2)
-                        <button type="button" wire:click="anteriorPaso" class="min-h-11 rounded-xl border border-brand-blue px-5 py-2.5 text-sm font-bold text-brand-blue hover:bg-blue-50">Anterior</button>
-                        <button type="submit" :disabled="uploading || previewError !== ''" wire:loading.attr="disabled" wire:target="guardar,imagenes,modeloGlb" class="min-h-11 rounded-xl bg-brand-red px-6 py-2.5 text-sm font-bold text-white hover:bg-brand-red-dark disabled:cursor-wait disabled:opacity-60"><span wire:loading.remove wire:target="guardar">{{ $productoId ? 'Guardar cambios' : 'Crear producto' }}</span><span wire:loading wire:target="guardar">Guardando…</span></button>
+                        <button type="button" wire:click="anteriorPaso" class="min-h-11 rounded-xl border border-brand-blue px-5 py-2.5 text-sm font-semibold text-brand-blue hover:bg-blue-50">Anterior</button>
+                        <button type="submit" :disabled="uploading || previewError !== ''" wire:loading.attr="disabled" wire:target="guardar,imagenes,modeloGlb" class="min-h-11 rounded-xl bg-brand-red px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:cursor-wait disabled:opacity-60"><span wire:loading.remove wire:target="guardar">{{ $productoId ? 'Guardar cambios' : 'Crear producto' }}</span><span wire:loading wire:target="guardar">Guardando…</span></button>
                     @else
-                        <button type="button" wire:click="siguientePaso" class="min-h-11 rounded-xl bg-brand-blue px-6 py-2.5 text-sm font-bold text-white hover:bg-brand-blue-dark">Validar y continuar →</button>
+                        <button type="button" wire:click="siguientePaso" class="min-h-11 rounded-xl bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-blue-dark">Validar y continuar <x-lucide-arrow-right /></button>
                     @endif
                 </footer>
             </form>

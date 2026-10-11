@@ -3,9 +3,11 @@
 namespace App\Livewire\Cliente;
 
 use App\Services\DireccionService;
+use App\Services\GeocodificacionInversaService;
 use App\Services\UbicacionLaPazService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class MisDirecciones extends Component
@@ -31,6 +33,13 @@ class MisDirecciones extends Component
     public string $detallesAdicionales = '';
 
     public bool $principal = false;
+
+    /** Últimos valores autocompletados desde el mapa; permiten actualizarlos si el cliente no los editó. */
+    #[Locked]
+    public string $zonaSugerida = '';
+
+    #[Locked]
+    public string $direccionSugerida = '';
 
     public ?int $direccionEliminarId = null;
 
@@ -96,6 +105,7 @@ class MisDirecciones extends Component
         }
 
         $this->resetValidation();
+        $this->reset('zonaSugerida', 'direccionSugerida');
         $this->modoEdicion = false;
         $this->direccionId = null;
         $this->nombreReferencia = '';
@@ -124,6 +134,7 @@ class MisDirecciones extends Component
         }
 
         $this->resetValidation();
+        $this->reset('zonaSugerida', 'direccionSugerida');
         $this->modoEdicion = true;
         $this->direccionId = $direccion->id;
         $this->nombreReferencia = $direccion->nombre_referencia ?? '';
@@ -142,11 +153,34 @@ class MisDirecciones extends Component
         ]);
     }
 
-    public function seleccionarUbicacion(string $lat, string $lng): void
+    /**
+     * Fija el pin y autocompleta calle y zona. Solo reemplaza campos vacíos o que se autocompletaron antes,
+     * para no borrar lo que el cliente escribió a mano.
+     */
+    public function seleccionarUbicacion(string $lat, string $lng, GeocodificacionInversaService $geocodificacion): void
     {
         $this->latitud = $lat;
         $this->longitud = $lng;
         $this->resetValidation(['latitud', 'longitud']);
+
+        if (! is_numeric($lat) || ! is_numeric($lng)) {
+            return;
+        }
+
+        $sugerencia = $geocodificacion->buscar((float) $lat, (float) $lng);
+        if (! $sugerencia) {
+            return;
+        }
+
+        if ($sugerencia['zona'] && ($this->zona === '' || $this->zona === $this->zonaSugerida)) {
+            $this->zona = $this->zonaSugerida = $sugerencia['zona'];
+            $this->resetValidation('zona');
+        }
+
+        if ($sugerencia['direccion'] && ($this->direccionCompleta === '' || $this->direccionCompleta === $this->direccionSugerida)) {
+            $this->direccionCompleta = $this->direccionSugerida = $sugerencia['direccion'];
+            $this->resetValidation('direccionCompleta');
+        }
     }
 
     public function cerrarModal(): void

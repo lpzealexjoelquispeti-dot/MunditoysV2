@@ -16,7 +16,7 @@
         <div role="listitem">
             <div class="mb-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
                 <span class="min-w-0 break-words font-semibold text-brand-ink">{{ $fila[$labelKey] }}</span>
-                <span class="font-bold text-brand-ink tabular-nums">{{ $unit }} {{ number_format($valor, $unit === 'Bs' ? 2 : 0) }}
+                <span class="font-semibold text-brand-ink tabular-nums">{{ $unit }} {{ number_format($valor, $unit === 'Bs' ? 2 : 0) }}
                     @if($total !== null && $total > 0)<span class="font-normal text-slate-500"> · {{ number_format($valor / $total * 100, 1) }}%</span>@endif
                 </span>
             </div>

@@ -1,8 +1,8 @@
 <x-admin-shell active="inventario">
     <div class="mx-auto max-w-[1700px]">
         <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div><p class="text-xs font-bold uppercase tracking-[.2em] text-brand-orange">Existencias y lotes</p><h1 class="mt-1 text-3xl font-bold text-brand-ink sm:text-4xl">Inventario</h1><p class="mt-1 text-sm text-slate-600">Cada ingreso conserva su costo, precio y movimiento. Sin eliminación definitiva.</p></div>
-            <button type="button" wire:click="abrirIngreso" class="min-h-11 rounded-xl bg-brand-red px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-brand-red-dark">＋ Registrar ingreso</button>
+            <div><h1 class="text-3xl font-semibold text-brand-ink sm:text-4xl">Inventario</h1></div>
+            <button type="button" wire:click="abrirIngreso" class="min-h-11 rounded-xl bg-brand-red px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-red-dark"><x-lucide-plus /> Registrar ingreso</button>
         </header>
         <section class="mt-6 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm" aria-label="Filtros de inventario">
             <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -37,7 +37,7 @@
                                     @endif
                                 </div></td>
                             </tr>
-                        @empty<tr><td colspan="6" class="px-6 py-16 text-center"><p class="text-4xl">📦</p><h2 class="mt-4 text-lg font-bold text-brand-ink">No hay inventarios para mostrar</h2><p class="mt-2 text-slate-500">Revisa los filtros o registra el primer ingreso por lote.</p></td></tr>@endforelse
+                        @empty<tr><td colspan="6" class="px-6 py-16 text-center"><p class="text-4xl"><x-lucide-package /></p><p class="mt-3 font-semibold text-slate-600">Sin inventario</p></td></tr>@endforelse
                     </tbody>
                 </table>
             </div>

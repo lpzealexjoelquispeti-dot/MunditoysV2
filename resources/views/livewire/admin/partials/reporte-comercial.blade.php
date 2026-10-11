@@ -25,7 +25,7 @@
 <x-report-panel title="Distribución de reseñas del catálogo" :subtitle="$kpis['total_resenas'].' reseñas · alcance global del período, independiente de sucursal y vendedor'">
     <div class="grid gap-8 lg:grid-cols-[1fr_2fr]">
         <div>
-            <p class="text-4xl font-bold text-brand-ink tabular-nums">{{ $kpis['calificacion_promedio'] === null ? 'Sin datos' : number_format($kpis['calificacion_promedio'], 1).' / 5' }}</p>
+            <p class="text-4xl font-semibold text-brand-ink tabular-nums">{{ $kpis['calificacion_promedio'] === null ? 'Sin datos' : number_format($kpis['calificacion_promedio'], 1).' / 5' }}</p>
             <p class="mt-3 text-sm leading-relaxed text-slate-500">Calificación promedio de las reseñas registradas. Revisa también su distribución y cantidad.</p>
         </div>
         <x-report-bars :rows="$resenas" :total="$kpis['total_resenas']" color="#f59e0b" />

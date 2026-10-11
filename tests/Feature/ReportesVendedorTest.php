@@ -124,7 +124,7 @@ test('un vendedor puede ingresar a su panel de reportes', function () {
 
     $response = $this->get(route('admin.mis-reportes'));
     $response->assertOk();
-    $response->assertSee('Mis Reportes de Ventas');
+    $response->assertSee('Mis reportes');
     $response->assertSee('Ventas Físicas (Mostrador / POS)');
     $response->assertSee('Ventas de Recojo en Sucursal');
 });

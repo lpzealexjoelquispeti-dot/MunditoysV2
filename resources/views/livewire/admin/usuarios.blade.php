@@ -1,8 +1,8 @@
 <x-admin-shell active="usuarios">
     <div class="mx-auto max-w-[1600px]">
         <header class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div><p class="text-xs font-semibold uppercase tracking-[.18em] text-brand-orange">Equipo y seguridad</p><h1 class="mt-1 text-3xl font-bold">Usuarios y accesos</h1><p class="mt-2 text-sm text-slate-600">Invita a tu equipo, controla sus accesos y consulta los cambios realizados.</p></div>
-            <button wire:click="crear" type="button" class="rounded-xl bg-brand-red px-5 py-3 text-sm font-semibold text-white">＋ Invitar empleado</button>
+            <div><h1 class="text-3xl font-semibold">Usuarios y accesos</h1></div>
+            <button wire:click="crear" type="button" class="rounded-xl bg-brand-red px-5 py-3 text-sm font-semibold text-white"><x-lucide-plus /> Invitar empleado</button>
         </header>
         <div class="mt-6 flex gap-2" role="group" aria-label="Tipo de usuarios">
             @foreach (['empleados' => 'Empleados', 'clientes' => 'Clientes'] as $clave => $etiqueta)
@@ -16,7 +16,7 @@
             <x-admin-field label="Ordenar" name="orden"><select id="orden" wire:model.live="orden" class="min-h-11 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"><option value="recientes">Más recientes</option><option value="antiguos">Más antiguos</option><option value="nombre">Nombre A–Z</option></select></x-admin-field>
             <button wire:click="limpiarFiltros" type="button" class="self-start rounded-xl border border-slate-200 px-4 py-3 text-sm text-brand-blue md:mt-6">Limpiar filtros</button>
         </section>
-        <p class="mt-4 text-sm text-slate-500" role="status">{{ $usuarios->total() }} cuentas encontradas. Las bajas conservan sus operaciones e historial.</p>
+        <p class="mt-4 text-sm text-slate-500" role="status">{{ $usuarios->total() }} cuentas</p>
         <p wire:loading class="mt-2 text-sm text-brand-blue" role="status">Procesando solicitud…</p>
         <div class="mt-3 overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
             <table class="w-full text-left text-sm">
@@ -28,7 +28,7 @@
                             <td class="px-5 py-4">{{ $usuario['rolUsuario'] === 'Logistica' ? 'Logística' : $usuario['rolUsuario'] }}</td>
                             <td class="px-5 py-4">
                                 <span class="inline-flex items-center gap-1 text-xs font-semibold text-slate-700">
-                                    <span>📍</span> {{ $usuario['sucursal_nombre'] ?? 'Sin sucursal' }}
+                                    <span><x-lucide-map-pin /></span> {{ $usuario['sucursal_nombre'] ?? 'Sin sucursal' }}
                                 </span>
                             </td>
                             <td class="px-5 py-4"><span @class(['inline-flex rounded-full px-3 py-1 text-xs font-semibold', 'bg-emerald-50 text-emerald-700'=>$usuario['estado'], 'bg-orange-50 text-orange-800'=>!$usuario['estado']])>{{ $usuario['situacion'] }}</span>@if($usuario['invitacion_pendiente'] && !$usuario['enviada'])<p class="mt-2 text-xs text-slate-500">Sin envío confirmado</p>@endif</td>
@@ -84,7 +84,7 @@
         @if ($detalle)
             <h3 class="text-xl font-semibold">{{ $detalle['name'] }} {{ $detalle['apellido_paterno'] }} {{ $detalle['apellido_materno'] }}</h3>
             <p class="mt-2 text-sm text-slate-600">{{ $detalle['email'] }} · {{ $detalle['telefono'] }}</p>
-            <p class="mt-2 text-sm text-brand-blue">{{ $detalle['rolUsuario'] }} · {{ $detalle['situacion'] }} · 📍 {{ $detalle['sucursal_nombre'] ?? 'Sin sucursal' }}</p>
+            <p class="mt-2 text-sm text-brand-blue">{{ $detalle['rolUsuario'] }} · {{ $detalle['situacion'] }} · <x-lucide-map-pin /> {{ $detalle['sucursal_nombre'] ?? 'Sin sucursal' }}</p>
             @if ($detalle['invitacion_pendiente'])<p class="mt-2 text-xs text-slate-500">Envío confirmado: {{ $detalle['enviada'] ?? 'No registrado' }} · Vence: {{ $detalle['expira'] ?? 'Sin enlace vigente' }}</p>@endif
             <h4 class="mt-6 font-semibold">Últimos 20 eventos</h4>
             <div class="mt-3 space-y-3">

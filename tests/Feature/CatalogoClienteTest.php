@@ -71,7 +71,7 @@ test('la pagina principal welcome se carga correctamente con productos recientes
 
     $response->assertOk();
     $response->assertSee('MundiToys');
-    $response->assertSee('¿Qué juguete estás buscando?');
+    $response->assertSee('Busca el juguete, míralo en 3D');
     $response->assertSee('Castillo Espacial Star');
     $response->assertSee('Sobre Nosotros');
 });
